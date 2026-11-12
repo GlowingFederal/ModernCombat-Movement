@@ -1,0 +1,17 @@
+plugins { id 'com.gtnewhorizons.gtnhconvention' }
+ext.repositoryRoot = file('../..')
+ext.minecraftTarget = '1.7.10'
+ext.loaderTarget = 'forge'
+ext.loaderVersion = '1.7.10-10.13.4.1614-1.7.10'
+ext.javaTarget = 8
+apply from: '../../build-logic/version.gradle'
+apply from: '../../build-logic/shared.gradle'
+// Jabel compiler settings are owned by GTNH; shared sources still obey Java 8 APIs.
+jar.finalizedBy 'reobfJar'
+
+repositories { maven { url = 'https://repo.spongepowered.org/maven/' }; maven { url = 'https://maven.cleanroommc.com' } }
+dependencies { compileOnly('org.spongepowered:mixin:0.8.5') { transitive = false } }
+tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none') }
+jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
+repositories { maven { url = 'https://nexus.gtnewhorizons.com/repository/public/' } }
+dependencies { runtimeOnly('io.github.legacymoddingmc:unimixins:0.3.1:dev') { transitive = false } }

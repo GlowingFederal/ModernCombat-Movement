@@ -1,0 +1,176 @@
+{
+  "mod_id": "moderncombatmovement",
+  "base_package": "com.glowingfederal.moderncombatmovement",
+  "display_name": "Modern Combat & Movement",
+  "archive_pattern": "{mod_id}-{full_version}+mc{mc}-{loader}.jar",
+  "version_class": "{package_path}/BuildVersion.class",
+  "required_classes": [
+    "{package_path}/ModernCombatMovement.class",
+    "{package_path}/pose/PlayerHooks.class"
+  ],
+  "required_shared_classes": [
+    "{package_path}/pose/PoseRules.class"
+  ],
+  "class_roots": [
+    "{package_path}/"
+  ],
+  "resource_roots": [
+    "assets/{mod_id}/",
+    "data/{mod_id}/"
+  ],
+  "required_assets": [],
+  "metadata_profiles": {
+    "legacy": {
+      "path": "mcmod.info",
+      "json_values": {
+        "0.modid": "{mod_id}",
+        "0.name": "{display_name}",
+        "0.version": "{full_version}",
+        "0.mcversion": "{mc}"
+      }
+    },
+    "forge": {
+      "path": "META-INF/mods.toml",
+      "sections": [
+        {
+          "table": "",
+          "fields": {
+            "modLoader": "javafml",
+            "loaderVersion": "{fml_range}"
+          }
+        },
+        {
+          "table": "mods",
+          "fields": {
+            "modId": "{mod_id}",
+            "version": "{full_version}",
+            "displayName": "{display_name}"
+          }
+        },
+        {
+          "table": "dependencies.{mod_id}",
+          "fields": {
+            "modId": "{loader}",
+            "versionRange": "{loader_range}",
+            "mandatory": true
+          }
+        },
+        {
+          "table": "dependencies.{mod_id}",
+          "fields": {
+            "modId": "minecraft",
+            "versionRange": "[{mc}]",
+            "mandatory": true
+          }
+        }
+      ]
+    },
+    "neoforge": {
+      "path": "META-INF/neoforge.mods.toml",
+      "sections": [
+        {
+          "table": "",
+          "fields": {
+            "modLoader": "javafml",
+            "loaderVersion": "{fml_range}"
+          }
+        },
+        {
+          "table": "mods",
+          "fields": {
+            "modId": "{mod_id}",
+            "version": "{full_version}",
+            "displayName": "{display_name}"
+          }
+        },
+        {
+          "table": "dependencies.{mod_id}",
+          "fields": {
+            "modId": "{loader}",
+            "versionRange": "{loader_range}",
+            "type": "required"
+          }
+        },
+        {
+          "table": "dependencies.{mod_id}",
+          "fields": {
+            "modId": "minecraft",
+            "versionRange": "[{mc}]",
+            "type": "required"
+          }
+        }
+      ]
+    }
+  },
+  "targets": {
+    "1.7.10": {
+      "metadata_profile": "legacy",
+      "required_classes": [],
+      "required_assets": [],
+      "json_checks": [],
+      "remapping": {
+        "required": true,
+        "checks": [
+          {
+            "class": "{package_path}/pose/PlayerHooks.class",
+            "present": [
+              "func_70090_H"
+            ],
+            "absent": [
+              "isInWater"
+            ]
+          }
+        ]
+      },
+      "block_textures": "blocks",
+      "item_textures": "items",
+      "language_file": "en_US.lang"
+    },
+    "1.8.9": {
+      "metadata_profile": "legacy",
+      "required_classes": [],
+      "required_assets": [],
+      "json_checks": [],
+      "remapping": {
+        "required": true,
+        "checks": [
+          {
+            "class": "{package_path}/pose/PlayerHooks.class",
+            "present": [
+              "func_70090_H"
+            ],
+            "absent": [
+              "isInWater"
+            ]
+          }
+        ]
+      },
+      "block_textures": "blocks",
+      "item_textures": "items",
+      "language_file": "en_US.lang"
+    },
+    "1.12.2": {
+      "metadata_profile": "legacy",
+      "required_classes": [],
+      "required_assets": [],
+      "json_checks": [],
+      "remapping": {
+        "required": true,
+        "checks": [
+          {
+            "class": "{package_path}/pose/PlayerHooks.class",
+            "present": [
+              "func_70090_H"
+            ],
+            "absent": [
+              "isInWater"
+            ]
+          }
+        ]
+      },
+      "block_textures": "blocks",
+      "item_textures": "items",
+      "language_file": "en_us.lang"
+    }
+  }
+}

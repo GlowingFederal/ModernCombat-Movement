@@ -1,0 +1,34 @@
+plugins { id 'java'; id 'xyz.wagyourtail.unimined' version '1.4.1' }
+ext.repositoryRoot = file('../..')
+ext.minecraftTarget = '1.8.9'
+ext.loaderTarget = 'forge'
+ext.loaderVersion = '1.8.9-11.15.1.2318-1.8.9'
+ext.javaTarget = 8
+apply from: '../../build-logic/version.gradle'
+apply from: '../../build-logic/shared.gradle'
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+unimined.minecraft {
+    version '1.8.9'
+    // Forge's transformer supplies SRG mappings; retain the stable MCP name layer.
+    mappings { mcp('stable', '22-1.8.9') }
+    runs {
+        config('client') { javaVersion = JavaVersion.VERSION_1_8 }
+        config('server') { javaVersion = JavaVersion.VERSION_1_8 }
+    }
+    minecraftForge { loader '11.15.1.2318-1.8.9' }
+    
+}
+jar.finalizedBy 'remapJar'
+
+repositories { maven { url = 'https://repo.spongepowered.org/maven/' }; maven { url = 'https://maven.cleanroommc.com' } }
+dependencies { compileOnly('org.spongepowered:mixin:0.8.5') { transitive = false } }
+tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none') }
+jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
+configurations { embeddedMixin }
+dependencies { embeddedMixin('org.spongepowered:mixin:0.7.11-SNAPSHOT') { transitive = false } }
+jar {
+ from({ configurations.embeddedMixin.collect { zipTree(it) } }) { exclude 'META-INF/MANIFEST.MF', 'META-INF/*.SF', 'META-INF/*.RSA', 'META-INF/*.DSA' }
+ manifest.attributes('TweakClass': 'org.spongepowered.asm.launch.MixinTweaker', 'TweakOrder': '0')
+}
+
+configurations.runtimeClasspath.extendsFrom(configurations.embeddedMixin)

@@ -1,0 +1,13 @@
+[
+  {
+    "modid": "moderncombatmovement",
+    "name": "Modern Combat & Movement",
+    "description": "Initial modern vanilla mechanics backport. See docs/STATUS.md for implementation and verification bounds.",
+    "version": "${fullVersion}",
+    "mcversion": "${minecraftTarget}",
+    "authorList": [
+      "GlowingFederal"
+    ],
+    "dependencies": []
+  }
+]
