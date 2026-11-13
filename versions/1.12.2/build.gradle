@@ -25,3 +25,5 @@ dependencies { compileOnly('org.spongepowered:mixin:0.8.5') { transitive = false
 tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none') }
 jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
 dependencies { runtimeOnly('zone.rong:mixinbooter:11.18') { transitive = false } }
+
+dependencies { compileOnly('zone.rong:mixinbooter:11.18') { transitive = false } }

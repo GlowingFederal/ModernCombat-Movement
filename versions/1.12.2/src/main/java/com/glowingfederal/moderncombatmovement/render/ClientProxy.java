@@ -18,7 +18,10 @@ public final class ClientProxy extends CommonProxy {
  private final ConcurrentHashMap<UUID,Packets.Snapshot> pending=new ConcurrentHashMap<UUID,Packets.Snapshot>();
  private volatile boolean disconnected;
  private boolean lastJump;
- public void init() { for(java.util.Map.Entry<String,net.minecraft.item.Item> entry : com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.entrySet()) {
+ public void init() { SpearModels.init();
+  net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.CrossbowBolt.class,manager->new net.minecraft.client.renderer.entity.RenderArrow<com.glowingfederal.moderncombatmovement.compat.CrossbowBolt>(manager) { protected net.minecraft.util.ResourceLocation getEntityTexture(com.glowingfederal.moderncombatmovement.compat.CrossbowBolt bolt) { return new net.minecraft.util.ResourceLocation("textures/entity/projectiles/arrow.png"); } });
+  if(com.glowingfederal.moderncombatmovement.compat.Anchors.standalone!=null) net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(net.minecraft.item.Item.getItemFromBlock(com.glowingfederal.moderncombatmovement.compat.Anchors.standalone),0,new net.minecraft.client.renderer.block.model.ModelResourceLocation("moderncombatmovement:respawn_anchor","inventory"));
+ for(java.util.Map.Entry<String,net.minecraft.item.Item> entry : com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.entrySet()) {
    net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(entry.getValue(),0,new net.minecraft.client.renderer.block.model.ModelResourceLocation("moderncombatmovement:"+entry.getKey(),"inventory"));
   } net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(this); }
  public void receive(Packets.Snapshot packet) { if(pending.size()<4096 || pending.containsKey(packet.uuid)) pending.put(packet.uuid,packet); }
@@ -42,9 +45,10 @@ public final class ClientProxy extends CommonProxy {
  public void input(EntityPlayer player) {
   EntityPlayerSP p=(EntityPlayerSP)player; Minecraft mc=Minecraft.getMinecraft(); PlayerState s=PlayerHooks.state(p);
   if(!Settings.movement(true)) return;
+  boolean jumpNow=p.movementInput.jump;if(jumpNow&&!s.flightJump&&com.glowingfederal.moderncombatmovement.movement.FlightHooks.start(p))Packets.channel.sendToServer(new Packets.Flight());s.flightJump=jumpNow;
   boolean forward=p.movementInput.moveForward>1.0E-5F;
   boolean eyes=p.isInsideOfMaterial(net.minecraft.block.material.Material.WATER);
-  boolean using=p.isHandActive();
+  boolean using=p.isHandActive() && !com.glowingfederal.moderncombatmovement.compat.ModernEquipment.spearUsing(p);
   boolean possible=(p.getFoodStats().getFoodLevel()>6 || p.capabilities.allowFlying) && !p.isPotionActive(net.minecraft.init.MobEffects.BLINDNESS);
   boolean slow=s.pose==Pose.CROUCHING || s.pose==Pose.LOW && !p.isInWater();
   double yaw=p.rotationYaw*Math.PI/180, x=p.movementInput.moveStrafe*Math.cos(yaw)-p.movementInput.moveForward*Math.sin(yaw), z=p.movementInput.moveForward*Math.cos(yaw)+p.movementInput.moveStrafe*Math.sin(yaw);

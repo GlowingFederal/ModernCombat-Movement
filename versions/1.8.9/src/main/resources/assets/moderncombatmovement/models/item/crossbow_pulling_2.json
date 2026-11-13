@@ -1,0 +1,25 @@
+{
+  "parent": "moderncombatmovement:item/crossbow",
+  "textures": {
+    "layer0": "moderncombatmovement:items/crossbow_pulling_2"
+  },
+  "display": {
+    "firstperson": {
+      "rotation": [
+        -90,
+        0,
+        -55
+      ],
+      "translation": [
+        1.13,
+        3.2,
+        1.13
+      ],
+      "scale": [
+        0.68,
+        0.68,
+        0.68
+      ]
+    }
+  }
+}

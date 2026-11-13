@@ -6,13 +6,31 @@
   "mixins": [
     "PlayerMixin",
     "LivingMixin",
-    "CombatMixin"
+    "CombatMixin",
+    "WebMixin",
+    "WebMovementMixin",
+    "SlimeMixin",
+    "CrossbowArrowMixin",
+    "EquipmentEnchantMixin",
+    "ForgeArmorMixin",
+    "LivingArmorMixin",
+    "CrystalMixin",
+    "TeleportMotionMixin",
+    "CrystalItemMixin",
+    "FlightMixin",
+    "FlightTravelMixin",
+    "FireworkUseMixin",
+    "FireworkFlightMixin"
   ],
   "client": [
     "InputMixin",
     "CameraMixin",
     "RenderPlayerMixin",
-    "ModelMixin"
+    "ModelMixin",
+    "SpearInputMixin",
+    "PlayerUseMovementMixin",
+    "ModernHandMixin",
+    "ElytraRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

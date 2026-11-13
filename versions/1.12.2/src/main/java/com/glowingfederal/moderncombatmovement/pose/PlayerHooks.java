@@ -9,13 +9,15 @@ import com.glowingfederal.moderncombatmovement.network.Packets;
 public final class PlayerHooks {
  private PlayerHooks() {}
  public static PlayerState state(EntityPlayer p) { return ((PlayerAccess)p).mcm$state(); }
- public static boolean active(EntityPlayer p) { return Settings.movement(p.world.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && !p.isSpectator() && !p.isRiding() && !p.capabilities.isFlying && !p.isElytraFlying(); }
+ public static boolean active(EntityPlayer p) { return Settings.movement(p.world.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && !p.isSpectator() && !p.isRiding() && !p.capabilities.isFlying && !com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p); }
  public static void before(EntityPlayer p) {
   PlayerState s=state(p);
+  com.glowingfederal.moderncombatmovement.combat.SpearMechanics.clearInactive(p);
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.update(p);
   if(!p.world.isRemote) Packets.consume(p);
+  com.glowingfederal.moderncombatmovement.movement.FlightHooks.tick(p);
   if(!p.world.isRemote || ModernCombatMovement.proxy.local(p)) update(p);
-  if(p.world.isRemote) s.animate();
+  if(p.world.isRemote) {s.animate();s.wings.tick(com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying(p),s.pose==Pose.CROUCHING,p.motionX,p.motionY,p.motionZ);}
   if(s.attackTicks < Integer.MAX_VALUE) s.attackTicks++;
  }
  public static void after(EntityPlayer p) {
@@ -25,6 +27,7 @@ public final class PlayerHooks {
  public static void update(EntityPlayer p) {
   PlayerState s=state(p);
   if(!active(p)) { s.pose=Pose.STANDING; s.swimming=false; release(p); return; }
+  if(com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying(p)) {s.pose=Pose.FALL_FLYING;s.swimming=false;dimensions(p);return;}
   s.swimming=Settings.swimming(p.world.isRemote) && PoseRules.swimming(s.swimming,p.isSprinting(),p.isInWater(),p.isInsideOfMaterial(Material.WATER),p.isRiding(),p.capabilities.isFlying);
   Pose desired=s.swimming ? Pose.LOW : p.isSneaking() ? Pose.CROUCHING : Pose.STANDING;
   if(!Settings.crawling(p.world.isRemote) && !s.swimming) {
@@ -48,7 +51,7 @@ public final class PlayerHooks {
  public static void release(EntityPlayer p) {
   PlayerState s=state(p);
   if(!s.ownedDimensions) return;
-  if(!p.isEntityAlive() || p.isPlayerSleeping() || p.isElytraFlying()) { s.ownedDimensions=false; return; }
+  if(!p.isEntityAlive() || com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p) || p.isPlayerSleeping() || p.isElytraFlying()) { s.ownedDimensions=false; return; }
   if(fits(p,Pose.STANDING)) { s.pose=Pose.STANDING; dimensions(p); s.ownedDimensions=false; }
  }
 }

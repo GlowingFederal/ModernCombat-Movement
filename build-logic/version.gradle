@@ -99,7 +99,6 @@ gradle.buildFinished { result ->
             }
             def releaseDirectory = new File(project.ext.repositoryRoot, 'build/release')
             releaseDirectory.mkdirs()
-            Files.copy(output.toPath(), new File(releaseDirectory, output.name).toPath(), StandardCopyOption.REPLACE_EXISTING)
             def archive = new java.util.jar.JarFile(output)
             try {
                 if (archive.manifest.mainAttributes.getValue('Implementation-Version') != project.fullVersion) {
@@ -113,6 +112,7 @@ gradle.buildFinished { result ->
             if (!Arrays.equals(originalBytes, Files.readAllBytes(versionFile.toPath()))) {
                 throw new GradleException('version.properties changed while packaging; refusing to overwrite it')
             }
+            Files.copy(output.toPath(), new File(releaseDirectory, output.name).toPath(), StandardCopyOption.REPLACE_EXISTING)
             // Preserve comments, other keys, separators, and line endings.
             def updated = versionText.replaceFirst(/(?m)^(\s*build_number\s*[:=]\s*)[0-9]+/, '$1' + (project.buildNumber + 1))
             def temporary = Files.createTempFile(versionFile.parentFile.toPath(), '.version-', '.tmp')

@@ -19,4 +19,10 @@ public class CombatApiTest {
     @Test(expected=IllegalArgumentException.class) public void rejectInvalidSpeed() {
         new ItemProperties(ItemProperties.Kind.SWORD, Double.NaN, 1, false, false);
     }
+    @Test public void legacyRegistryPathsRetainTheirCase() {
+        ItemProperties properties = new ItemProperties(ItemProperties.Kind.SWORD, 1.6, 7, true, false);
+        CombatApi.register("test:item.LegacySword", properties);
+        assertSame(properties, CombatApi.find("test:item.LegacySword"));
+        assertNull(CombatApi.find("test:item.legacysword"));
+    }
 }

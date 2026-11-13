@@ -1,0 +1,6 @@
+{
+  "parent": "moderncombatmovement:item/crossbow",
+  "textures": {
+    "layer0": "moderncombatmovement:items/crossbow_pulling_2"
+  }
+}

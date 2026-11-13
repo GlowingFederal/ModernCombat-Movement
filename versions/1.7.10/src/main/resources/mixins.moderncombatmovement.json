@@ -3,18 +3,8 @@
   "minVersion": "0.7.11",
   "package": "com.glowingfederal.moderncombatmovement.mixins",
   "compatibilityLevel": "JAVA_8",
-  "mixins": [
-    "PlayerMixin",
-    "LivingMixin",
-    "CombatMixin"
-  ],
-  "client": [
-    "InputMixin",
-    "CameraMixin",
-    "RenderPlayerMixin",
-    "ModelMixin"
-  ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "target": "@env(DEFAULT)"
 }

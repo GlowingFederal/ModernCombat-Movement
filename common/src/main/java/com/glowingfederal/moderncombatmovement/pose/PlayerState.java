@@ -9,6 +9,14 @@ public final class PlayerState {
     public double jumpVelocity;
     public boolean sprinting, wasForward;
     public int sprintWindow;
+    /** Server-thread kinetic contact cooldowns; expired entries are removed while the item is used. */
+    public final java.util.Map<java.util.UUID,Long> spearContacts = new java.util.HashMap<java.util.UUID,Long>();
+    public Object kineticStack;
+    public double maceImpactY=Double.NaN;
+    public boolean flightOwned,flightJump;
+    public int flightTicks;
+    public final com.glowingfederal.moderncombatmovement.movement.FlightMotion flightMotion=new com.glowingfederal.moderncombatmovement.movement.FlightMotion();
+    public final com.glowingfederal.moderncombatmovement.render.WingAnimation wings=new com.glowingfederal.moderncombatmovement.render.WingAnimation();
     public void animate() {
         previousEye = eye;
         eye += (pose.eyeHeight - eye) * 0.5F;

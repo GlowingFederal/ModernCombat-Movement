@@ -29,7 +29,7 @@ public final class CombatApi {
 
     private static void validate(String id, ItemProperties properties) {
         if (frozen) throw new IllegalStateException("Combat registrations are frozen after mod loading");
-        if (id == null || !id.matches("[a-z0-9_.-]+:[a-z0-9_./-]+") || properties == null) {
+        if (id == null || !id.matches("[a-z0-9_.-]+:[A-Za-z0-9_./-]+") || properties == null) {
             throw new IllegalArgumentException("An exact namespaced registry ID and properties are required");
         }
     }

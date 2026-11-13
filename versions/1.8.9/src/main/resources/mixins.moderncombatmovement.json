@@ -6,15 +6,38 @@
   "mixins": [
     "PlayerMixin",
     "LivingMixin",
-    "CombatMixin"
+    "CombatMixin",
+    "WebMixin",
+    "WebMovementMixin",
+    "SlimeMixin",
+    "CrossbowArrowMixin",
+    "EquipmentEnchantMixin",
+    "ForgeArmorMixin",
+    "LivingArmorMixin",
+    "CrystalMixin",
+    "TeleportMotionMixin",
+    "GoldenAppleMixin",
+    "ProtectionMixin",
+    "FoodRegenMixin",
+    "FlightMixin",
+    "FlightTravelMixin",
+    "FireworkUseMixin",
+    "FlightPacketMixin"
   ],
   "client": [
     "InputMixin",
     "CameraMixin",
     "RenderPlayerMixin",
-    "ModelMixin"
+    "ModelMixin",
+    "SpearInputMixin",
+    "PlayerUseMovementMixin",
+    "PotionCreativeMixin",
+    "CrystalRenderMixin",
+    "ModernHandMixin",
+    "ElytraRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1
-  }
+  },
+  "plugin": "com.glowingfederal.moderncombatmovement.bootstrap.MixinSelection"
 }

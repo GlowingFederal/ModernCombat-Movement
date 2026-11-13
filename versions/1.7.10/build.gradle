@@ -15,3 +15,6 @@ tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none
 jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
 repositories { maven { url = 'https://nexus.gtnewhorizons.com/repository/public/' } }
 dependencies { runtimeOnly('io.github.legacymoddingmc:unimixins:0.3.1:dev') { transitive = false } }
+dependencies { compileOnly('io.github.legacymoddingmc:unimixins:0.3.1:dev') { transitive = false } }
+
+jar { from('../../LICENSES/UAB-LGPL-3.0.txt') { into 'META-INF' } }

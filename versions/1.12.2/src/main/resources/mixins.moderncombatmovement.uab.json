@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.7.11",
+  "package": "com.glowingfederal.moderncombatmovement.mixins.uab",
+  "compatibilityLevel": "JAVA_8",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "mixins": [
+    "CrossbowUabMixin",
+    "MaceUabMixin",
+    "SpearUabMixin",
+    "SpearLungeUabMixin"
+  ]
+}

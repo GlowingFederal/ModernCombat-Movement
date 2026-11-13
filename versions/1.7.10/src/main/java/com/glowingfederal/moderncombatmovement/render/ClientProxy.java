@@ -18,7 +18,16 @@ public final class ClientProxy extends CommonProxy {
  private final ConcurrentHashMap<UUID,Packets.Snapshot> pending=new ConcurrentHashMap<UUID,Packets.Snapshot>();
  private volatile boolean disconnected;
  private boolean lastJump;
- public void init() { cpw.mods.fml.common.FMLCommonHandler.instance().bus().register(this); }
+ public void init() {
+  cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.BoostRocket.class,new net.minecraft.client.renderer.entity.RenderSnowball(net.minecraft.init.Items.fireworks));
+  SpearItemRenderer spearRenderer=new SpearItemRenderer();net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(spearRenderer);
+  for(com.glowingfederal.moderncombatmovement.combat.SpearSpec spec:com.glowingfederal.moderncombatmovement.combat.SpearSpec.values()){net.minecraft.item.Item item=cpw.mods.fml.common.registry.GameRegistry.findItem(com.glowingfederal.moderncombatmovement.compat.Content.uab?"etfuturum":"moderncombatmovement",spec.material+"_spear");if(item!=null)net.minecraftforge.client.MinecraftForgeClient.registerItemRenderer(item,spearRenderer);}
+
+  cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.PlacedCrystal.class,new net.minecraft.client.renderer.tileentity.RenderEnderCrystal());
+  net.minecraft.item.Item crossbow=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("crossbow");
+  if(crossbow!=null) net.minecraftforge.client.MinecraftForgeClient.registerItemRenderer(crossbow,new CrossbowItemRenderer());
+  cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.CrossbowBolt.class,new net.minecraft.client.renderer.entity.RenderArrow()); cpw.mods.fml.common.FMLCommonHandler.instance().bus().register(this); }
+ public void fireworks(net.minecraft.world.World w,double x,double y,double z,double vx,double vy,double vz,net.minecraft.nbt.NBTTagCompound data){w.makeFireworks(x,y,z,vx,vy,vz,data);}
  public void receive(Packets.Snapshot packet) { if(pending.size()<4096 || pending.containsKey(packet.uuid)) pending.put(packet.uuid,packet); }
  public boolean local(EntityPlayer player) { return player==Minecraft.getMinecraft().thePlayer; }
  @SubscribeEvent public void disconnect(FMLNetworkEvent.ClientDisconnectionFromServerEvent e) { disconnected=true; }
@@ -40,9 +49,10 @@ public final class ClientProxy extends CommonProxy {
  public void input(EntityPlayer player) {
   EntityPlayerSP p=(EntityPlayerSP)player; Minecraft mc=Minecraft.getMinecraft(); PlayerState s=PlayerHooks.state(p);
   if(!Settings.movement(true)) return;
+  boolean jumpNow=p.movementInput.jump;if(jumpNow&&!s.flightJump&&com.glowingfederal.moderncombatmovement.movement.FlightHooks.start(p))Packets.channel.sendToServer(new Packets.Flight());s.flightJump=jumpNow;
   boolean forward=p.movementInput.moveForward>1.0E-5F;
   boolean eyes=p.isInsideOfMaterial(net.minecraft.block.material.Material.water);
-  boolean using=p.isUsingItem();
+  boolean using=p.isUsingItem() && !com.glowingfederal.moderncombatmovement.compat.ModernEquipment.spearUsing(p);
   boolean possible=(p.getFoodStats().getFoodLevel()>6 || p.capabilities.allowFlying) && !p.isPotionActive(net.minecraft.potion.Potion.blindness);
   boolean slow=s.pose==Pose.CROUCHING || s.pose==Pose.LOW && !p.isInWater();
   double yaw=p.rotationYaw*Math.PI/180, x=p.movementInput.moveStrafe*Math.cos(yaw)-p.movementInput.moveForward*Math.sin(yaw), z=p.movementInput.moveForward*Math.cos(yaw)+p.movementInput.moveStrafe*Math.sin(yaw);

@@ -49,7 +49,16 @@ def persist_version(original, number):
 
 def run(directory, tasks, release=None, warning_mode=None):
     wrapper = directory / ("gradlew.bat" if os.name == "nt" else "gradlew")
-    command = [str(wrapper)] if os.name == "nt" else ["sh", str(wrapper)]
+    if os.name == "nt":
+        runtime_file = directory / "target.json"
+        java_version = json.loads(runtime_file.read_text())["build_java"] if runtime_file.exists() else 21
+        command = ["powershell.exe", "-NoProfile", "-ExecutionPolicy", "Bypass", "-File",
+                   str(ROOT / "scripts" / "run-gradle.ps1"), "-ProjectDirectory", str(directory),
+                   "-JavaVersion", str(java_version)]
+        if java_version >= 25:
+            command.append("-EnableNativeAccess")
+    else:
+        command = ["sh", str(wrapper)]
     command += tasks + ["--console=plain", "--max-workers=2"]
     if release:
         command += [f"-PreleaseModVersion={release[0]}", f"-PreleaseBuildNumber={release[1]}"]

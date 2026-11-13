@@ -11,6 +11,7 @@ import com.glowingfederal.moderncombatmovement.config.Settings;
 public abstract class CombatMixin {
  @Inject(method={"attackTargetEntityWithCurrentItem","func_71059_n"},at=@At("HEAD"),cancellable=true) private void mcm$attack(net.minecraft.entity.Entity target,CallbackInfo ci) {
   EntityPlayer p=(EntityPlayer)(Object)this; ItemProperties profile=CombatHooks.profile(p);
+  if(SpearMechanics.owned(p)){SpearMechanics.jab(p);ci.cancel();return;}
   if(profile!=null && Settings.combat(p.worldObj.isRemote)) { LegacyAttack.attack(p,target,profile); ci.cancel(); }
  }
 }

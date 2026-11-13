@@ -33,3 +33,32 @@ There is no namespace wildcard, subclass inference or blanket interception of al
 `version.properties` contains semantic `mod_version` and the next production `build_number`. Root scripts retain ExampleMod's version transaction, per-target wrappers and archive verification. Independent builds produce per-target reobfuscated/remapped JARs; successful outputs are copied to root `build/release`. Aggregate release uses one number, verifies every expected target and advances only after all succeed. No GTNH pack or GTNH runtime is required merely because the 1.7 compiler uses GTNHGradle/Jabel.
 
 Build/runtime JVMs differ: the retained 1.7 toolchain uses JDK 25 for its build and Jabel compilation; 1.8/1.12 use JDK 21 with Java 8 API/bytecode checks. Players and dedicated servers use Java 8. Optional content registration does not add progression ingredients or world generation. Removing UAB from an existing save is not a supported automatic registry migration; do not silently map its unrelated registry entries.
+
+## Combat kit ownership
+
+`Crossbows` owns charged-ammunition NBT, launch and explicit enchantments. `CrossbowBolt` retains each target's native arrow collision/lifecycle and adapts only this owned entity. Ordinary/modded arrow instances do not opt in through inheritance or shooter equipment. `Totems` handles legacy death rescue after lethal damage; 1.12 uses its native death-protection owner. Optional late Mixins select the exact UAB crossbow class and suppress its legacy pre-armor totem check, while preserving UAB registration and client assets.
+
+`Anchors` owns selected anchor interactions; `AnchorBlast` scopes explosion changes to those blasts. `KitEffects` owns effects missing from the inspected UAB potion table. Native web collision marks the stuck source so Weaving does not change unrelated modded slowdown. The server kit policy gates these actions and effect behavior. This grouping is a compatibility switch, not an alternate balance profile.
+
+See COMBAT-KIT.md for content coverage and STATUS.md for evidence limits. A registered item kind or subsystem package is not a completed implementation.
+
+## Equipment rendering and 1.7 eye coordinates
+
+UAB's `ItemCrossbowRenderer`, `CrossbowPose` and charging-action Mixin are the technical equipment references. The 1.7 standalone crossbow renderer is an explicitly attributed LGPL component adaptation; UAB keeps its existing renderer when installed. Native generated item models own 1.8/1.12 rendering. All three adapters supply exact crossbow charge/hold arm poses and distinguish charged ammunition from charging icons. Spears are a separate animation migration; this work does not transplant UAB spear poses.
+
+Native hand matrices differ: 1.8's held-item layer translates by `(-1/16,7/16,1/16)`, whereas 1.12 rotates `X=-90,Y=180` then translates `(1/16,1/8,-5/8)`. The 1.8 model display is converted between those bases, including its first-person `.4` scale; copying the 1.12 JSON unchanged produces the wrong orientation. The 1.7 adapter removes native legacy hand scaling before applying the official `.68` first-person and `.9` third-person model scales.
+
+Forge 1.7's local player `posY` includes its standing `yOffset`; its default `getEyeHeight()` is a relative `.12` value. Server and observer players use different conventions. The adapter preserves that getter contract via `getDefaultEyeHeight() + poseEye - 1.62`, anchors picking to interpolated box feet plus the pose eye, and corrects native fluid/opaque-block eye sampling. Camera smoothing stays independent. Returning the same absolute getter on every 1.7 player falsely places local crawl queries in the ceiling and forces first person. World-space eyes, rather than raw getter/posY values across targets, are the parity measurement.
+
+Later modularity pass (requested): provide UAB-style module and content controls for modpack authors, retain modern vanilla defaults, and validate coupled feature settings together. This is separate from the combat-kit implementation batch.
+
+
+## Gliding ownership and food compatibility
+
+`FlightHooks` validates known chest-slot Elytra, owns native entity flag 7 and the server durability counter. `FlightTravel` replaces only the owned air-travel branch; native collision and fluid movement remain authoritative. Shared `FlightMath` contains the inspected 1.21.11 equations. Takeoff requests are coalesced on the network thread and consumed on the server tick thread. Protocol 3 adds the appended fall-flying pose and flight policy bit; mismatched distribution versions cannot connect. Legacy standing eye-coordinate conventions still apply while gliding.
+
+Standalone Elytra exist on 1.7/1.8; UAB suppresses their registration. An optional bridge makes UAB's glider getter/setter/tick consume the same canonical state, cancels duplicate flight travel and wear, and preserves external non-chest gliders. Native 1.12 Elytra remain registered by Minecraft, with the modern lifecycle and air physics adapted. `BoostRocket` owns attached vanilla-item rockets on legacy targets, with native tracking/spawn data, owner credit, star damage and NBT. Native ground-launched fireworks and arbitrary foreign projectiles retain their implementation. Crossbow firework ammunition is not yet supported.
+
+`WingAnimation` advances once per player tick; render interpolation does not mutate it. Version renderers supply wing geometry, cape/Elytra skin selection and glint. Rendering is separate from the authoritative .6-block hitbox and .4-block eye. `Movement.elytraFlight` disables owned flight as a coupled unit; the movement subsystem must also be enabled. Foreign glider implementations retain their owner when this feature is disabled.
+
+Golden apple adaptation changes the effect callback without replacing native item consumption or `FoodStats.addStats(ItemFood, ItemStack)`. This preserves AppleCore's food API and AppleSkin's observation path. Forge 1.7 requires Modern Regen 1.0.2.2+, whose actual transformer detects AppleCore and uses its regeneration events. On 1.8, the fallback native regeneration Mixin is omitted when AppleCore's API is present; a narrow optional event adapter adjusts only regeneration period, healing and exhaustion. AppleCore retains its update, timers, cancellation and synchronization. An installed Modern Regen remains the regeneration owner. Forge 1.12 retains native regeneration. MCM does not replace the hunger HUD, food capability, or AppleSkin network channel.

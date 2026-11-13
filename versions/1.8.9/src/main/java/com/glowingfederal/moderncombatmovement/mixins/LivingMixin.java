@@ -8,7 +8,10 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.movement.*;
 @Mixin(value=EntityLivingBase.class,remap=false)
-public abstract class LivingMixin {
+public abstract class LivingMixin implements com.glowingfederal.moderncombatmovement.combat.MotionAccess {
+ @org.spongepowered.asm.mixin.Unique private final com.glowingfederal.moderncombatmovement.combat.MotionState mcm$motion=new com.glowingfederal.moderncombatmovement.combat.MotionState();
+ public com.glowingfederal.moderncombatmovement.combat.MotionState mcm$motion() { return mcm$motion; }
+ @Inject(method={"onEntityUpdate","func_70030_z"},at=@At("HEAD")) private void mcm$knownSpeed(CallbackInfo ci) { net.minecraft.entity.EntityLivingBase e=(net.minecraft.entity.EntityLivingBase)(Object)this;mcm$motion.sample(e.dimension,e.posX,e.posY,e.posZ); }
  @org.spongepowered.asm.mixin.Unique private net.minecraft.util.DamageSource mcm$source;
  @Inject(method={"attackEntityFrom","func_70097_a"},at=@At("HEAD")) private void mcm$damageSource(net.minecraft.util.DamageSource source,float amount,CallbackInfoReturnable<Boolean> ci) { mcm$source=source; }
  @Inject(method={"attackEntityFrom","func_70097_a"},at=@At("RETURN")) private void mcm$damageDone(net.minecraft.util.DamageSource source,float amount,CallbackInfoReturnable<Boolean> ci) { mcm$source=null; }
@@ -38,8 +41,10 @@ public abstract class LivingMixin {
 
  @Inject(method={"knockBack","func_70653_a"},at=@At("HEAD"),cancellable=true) private void mcm$knockback(net.minecraft.entity.Entity attacker,float strength,double x,double z,CallbackInfo ci) {
   EntityLivingBase p=(EntityLivingBase)(Object)this;
+  if(mcm$source instanceof com.glowingfederal.moderncombatmovement.combat.SpearDamageSource||mcm$source instanceof com.glowingfederal.moderncombatmovement.combat.CombatBlastDamageSource){ci.cancel();return;}
   if(com.glowingfederal.moderncombatmovement.config.Settings.knockback(p.worldObj.isRemote) && com.glowingfederal.moderncombatmovement.combat.CombatHooks.managed(mcm$source)) {
-   com.glowingfederal.moderncombatmovement.knockback.KnockbackHooks.apply(p,attacker,strength,x,z); ci.cancel();
+   if(mcm$source instanceof com.glowingfederal.moderncombatmovement.compat.BoostRocketDamage){net.minecraft.entity.Entity projectile=mcm$source.getSourceOfDamage();x=projectile.posX-p.posX;z=projectile.posZ-p.posZ;}
+   com.glowingfederal.moderncombatmovement.knockback.KnockbackHooks.apply(p,attacker,.4F,x,z); ci.cancel();
   }
  }
 
@@ -56,4 +61,13 @@ public abstract class LivingMixin {
   }
   return acceleration;
  }
+ @Inject(method={"getArmSwingAnimationEnd","func_82166_i"},at=@At("HEAD"),cancellable=true)private void mcm$spearSwing(CallbackInfoReturnable<Integer> ci){
+  if(!((Object)this instanceof EntityPlayer))return;EntityPlayer p=(EntityPlayer)(Object)this;if(!com.glowingfederal.moderncombatmovement.compat.ModernEquipment.enabled(p))return;
+  com.glowingfederal.moderncombatmovement.combat.SpearSpec spec=com.glowingfederal.moderncombatmovement.compat.ModernEquipment.spear(com.glowingfederal.moderncombatmovement.combat.CombatHooks.held(p));if(spec==null)return;
+  int ticks=(int)(spec.swingSeconds*20);
+  if(p.isPotionActive(net.minecraft.potion.Potion.digSpeed))ticks-=1+p.getActivePotionEffect(net.minecraft.potion.Potion.digSpeed).getAmplifier();
+  else if(p.isPotionActive(net.minecraft.potion.Potion.digSlowdown))ticks+=(1+p.getActivePotionEffect(net.minecraft.potion.Potion.digSlowdown).getAmplifier())*2;
+  ci.setReturnValue(ticks);
+ }
+
 }

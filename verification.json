@@ -6,10 +6,23 @@
   "version_class": "{package_path}/BuildVersion.class",
   "required_classes": [
     "{package_path}/ModernCombatMovement.class",
-    "{package_path}/pose/PlayerHooks.class"
+    "{package_path}/pose/PlayerHooks.class",
+    "{package_path}/compat/Crossbows.class",
+    "{package_path}/compat/CrossbowBolt.class",
+    "{package_path}/network/Packets.class",
+    "{package_path}/combat/CombatWeaponItem.class",
+    "{package_path}/combat/SpearMechanics.class",
+    "{package_path}/combat/MaceMechanics.class",
+    "{package_path}/combat/CombatBlast.class",
+    "{package_path}/compat/Crystals.class",
+    "{package_path}/movement/FlightHooks.class",
+    "{package_path}/movement/FlightTravel.class",
+    "{package_path}/render/ElytraWings.class"
   ],
   "required_shared_classes": [
-    "{package_path}/pose/PoseRules.class"
+    "{package_path}/pose/PoseRules.class",
+    "{package_path}/movement/FlightMath.class",
+    "{package_path}/render/WingAnimation.class"
   ],
   "class_roots": [
     "{package_path}/"
@@ -18,7 +31,16 @@
     "assets/{mod_id}/",
     "data/{mod_id}/"
   ],
-  "required_assets": [],
+  "required_assets": [
+    "mixins.moderncombatmovement.json",
+    "assets/{mod_id}/lang/{language_file}",
+    "assets/{mod_id}/textures/items/crossbow_standby.png",
+    "assets/{mod_id}/textures/items/totem_of_undying.png",
+    "assets/{mod_id}/textures/items/mace.png",
+    "assets/{mod_id}/textures/items/iron_spear.png",
+    "assets/{mod_id}/textures/items/copper_helmet.png",
+    "assets/{mod_id}/textures/entity/elytra.png"
+  ],
   "metadata_profiles": {
     "legacy": {
       "path": "mcmod.info",
@@ -105,8 +127,14 @@
   "targets": {
     "1.7.10": {
       "metadata_profile": "legacy",
-      "required_classes": [],
-      "required_assets": [],
+      "required_classes": [
+        "{package_path}/compat/ElytraItem.class",
+        "{package_path}/compat/BoostRocket.class"
+      ],
+      "required_assets": [
+        "assets/{mod_id}/textures/items/elytra.png",
+        "assets/{mod_id}/textures/items/elytra_broken.png"
+      ],
       "json_checks": [],
       "remapping": {
         "required": true,
@@ -128,8 +156,14 @@
     },
     "1.8.9": {
       "metadata_profile": "legacy",
-      "required_classes": [],
-      "required_assets": [],
+      "required_classes": [
+        "{package_path}/compat/ElytraItem.class",
+        "{package_path}/compat/BoostRocket.class"
+      ],
+      "required_assets": [
+        "assets/{mod_id}/textures/items/elytra.png",
+        "assets/{mod_id}/textures/items/elytra_broken.png"
+      ],
       "json_checks": [],
       "remapping": {
         "required": true,

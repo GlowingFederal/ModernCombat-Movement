@@ -28,4 +28,6 @@ public abstract class PlayerMixin implements PlayerAccess {
  @Inject(method={"applyEntityAttributes","func_110147_ax"},at=@At("RETURN")) private void mcm$attribute(CallbackInfo ci) {
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.registerAttribute((EntityPlayer)(Object)this);
  }
+
+ @Inject(method={"setSpawnPoint","func_180473_a"},at=@At("HEAD")) private void mcm$bed(net.minecraft.util.math.BlockPos pos,boolean forced,CallbackInfo ci) { com.glowingfederal.moderncombatmovement.compat.AnchorRespawn.clearForBed((EntityPlayer)(Object)this); }
 }

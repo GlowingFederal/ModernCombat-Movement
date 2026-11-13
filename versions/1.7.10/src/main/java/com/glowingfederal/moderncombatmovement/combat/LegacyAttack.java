@@ -16,19 +16,17 @@ public final class LegacyAttack {
  public static void attack(EntityPlayer p,Entity target,ItemProperties profile) {
   ItemStack stack=CombatHooks.held(p); PlayerState state=PlayerHooks.state(p);
   if(p.worldObj.isRemote) { state.attackTicks=0; return; }
-  if(!!net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.AttackEntityEvent(p,target)) && (stack==null || !stack.getItem().onLeftClickEntity(stack,p,target))) return;
+  if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.AttackEntityEvent(p,target))) return;
+  if(stack!=null && stack.getItem().onLeftClickEntity(stack,p,target)) return;
   if(!target.canAttackWithItem() || target.hitByEntity(p)) return;
   CombatHooks.update(p);
   float strength=CombatMath.strength(state.attackTicks,.5F,CombatHooks.speed(p)); state.attackTicks=0;
-  float base=(float)p.getEntityAttribute(SharedMonsterAttributes.attackDamage).getAttributeValue();
-  double intrinsic=1;
-  if(stack!=null) for(AttributeModifier modifier : stack.getAttributeModifiers().get("generic.attackDamage")) if(modifier.getOperation()==0) intrinsic+=modifier.getAmount();
-  base+=(float)(profile.attackDamage-intrinsic);
+  float base=CombatHooks.attackDamage(p);
   float enchanted=target instanceof EntityLivingBase ? EnchantmentHelper.getEnchantmentModifierLiving(p,(EntityLivingBase)target) : 0;
   int sharp=stack==null ? 0 : EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId,stack);
   if(sharp>0) enchanted+=.5F+.5F*sharp-1.25F*sharp;
   boolean critical=CombatMath.critical(strength,p.fallDistance,p.onGround,p.isOnLadder(),p.isInWater(),p.isPotionActive(Potion.blindness),p.ridingEntity!=null,p.isSprinting(),target instanceof EntityLivingBase);
-  float damage=CombatMath.damage(Math.max(0,base),enchanted,strength,critical);
+  float damage=CombatMath.damage(Math.max(0,base),enchanted,strength,critical)+MaceMechanics.bonus(p)*(critical?1.5F:1);
   boolean sprint=strength>.9F && p.isSprinting();
   int enchantKnockback=target instanceof EntityLivingBase ? EnchantmentHelper.getKnockbackModifier(p,(EntityLivingBase)target) : 0;
   int fire=EnchantmentHelper.getFireAspectModifier(p);

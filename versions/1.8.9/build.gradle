@@ -21,7 +21,7 @@ unimined.minecraft {
 jar.finalizedBy 'remapJar'
 
 repositories { maven { url = 'https://repo.spongepowered.org/maven/' }; maven { url = 'https://maven.cleanroommc.com' } }
-dependencies { compileOnly('org.spongepowered:mixin:0.8.5') { transitive = false } }
+dependencies { compileOnly('org.spongepowered:mixin:0.7.11-SNAPSHOT') { transitive = false } }
 tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none') }
 jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
 configurations { embeddedMixin }

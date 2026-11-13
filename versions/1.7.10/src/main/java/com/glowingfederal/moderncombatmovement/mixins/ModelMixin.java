@@ -4,15 +4,25 @@ import net.minecraft.client.model.ModelBiped;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.EntityPlayer;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.*;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.config.Settings;
 @Mixin(value=ModelBiped.class,remap=false)
 public abstract class ModelMixin {
- @Shadow(aliases={"field_78117_n"}) public boolean isSneak;
+ @org.spongepowered.asm.mixin.Unique private float mcm$spearSwing;
+ @org.spongepowered.asm.mixin.Unique private boolean mcm$spear;
  @Inject(method={"setRotationAngles","func_78087_a"},at=@At("HEAD")) private void mcm$crouch(float limb,float amount,float age,float yaw,float pitch,float scale,Entity entity,CallbackInfo ci) {
-  if(Settings.rendering && entity instanceof EntityPlayer && PlayerHooks.active((EntityPlayer)entity)) isSneak=PlayerHooks.state((EntityPlayer)entity).pose==Pose.CROUCHING;
+  mcm$spear=entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.render.SpearPoses.owned((EntityPlayer)entity);
+  if(mcm$spear){mcm$spearSwing=((ModelBiped)(Object)this).onGround;((ModelBiped)(Object)this).onGround=0;}
+
+  if(Settings.rendering && entity instanceof EntityPlayer && PlayerHooks.active((EntityPlayer)entity)) ((ModelBiped)(Object)this).isSneak=PlayerHooks.state((EntityPlayer)entity).pose==Pose.CROUCHING;
+ }
+ @Inject(method={"setRotationAngles","func_78087_a"},at=@At("RETURN")) private void mcm$crossbow(float limb,float amount,float age,float yaw,float pitch,float scale,Entity entity,CallbackInfo ci) {
+  if(entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying((EntityPlayer)entity)){((ModelBiped)(Object)this).bipedHead.rotateAngleX=-(float)Math.PI/4;((ModelBiped)(Object)this).bipedHeadwear.rotateAngleX=-(float)Math.PI/4;}
+
+  if(mcm$spear){((ModelBiped)(Object)this).onGround=mcm$spearSwing;com.glowingfederal.moderncombatmovement.render.SpearPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age,mcm$spearSwing);}
+
+  if(Settings.rendering && entity instanceof EntityPlayer) com.glowingfederal.moderncombatmovement.render.CrossbowPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age);
  }
 }

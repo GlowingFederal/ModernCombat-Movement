@@ -8,7 +8,11 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.ModernCombatMovement;
 @Mixin(value=EntityPlayer.class, remap=false)
-public abstract class PlayerMixin implements PlayerAccess {
+public abstract class PlayerMixin implements PlayerAccess,com.glowingfederal.moderncombatmovement.combat.PlayerUseAccess {
+ @org.spongepowered.asm.mixin.Shadow(aliases="field_71074_e")private net.minecraft.item.ItemStack itemInUse;
+ @org.spongepowered.asm.mixin.Shadow(aliases="field_71072_f")private int itemInUseCount;
+ public net.minecraft.item.ItemStack mcm$useStack(){return itemInUse;}
+ public int mcm$useRemaining(){return itemInUseCount;}
  @Unique private final PlayerState mcm$state=new PlayerState();
  public PlayerState mcm$state() { return mcm$state; }
  @Inject(method={"onUpdate","func_70071_h_"},at=@At("HEAD")) private void mcm$before(CallbackInfo ci) { PlayerHooks.before((EntityPlayer)(Object)this); }
@@ -20,9 +24,11 @@ public abstract class PlayerMixin implements PlayerAccess {
  @Inject(method={"getEyeHeight","func_70047_e"},at=@At("HEAD"),cancellable=true) private void mcm$eye(CallbackInfoReturnable<Float> ci) {
   if(PlayerHooks.active((EntityPlayer)(Object)this)) ci.setReturnValue(mcm$state.pose.eyeHeight);
  }
- 
+
 
  @Inject(method={"applyEntityAttributes","func_110147_ax"},at=@At("RETURN")) private void mcm$attribute(CallbackInfo ci) {
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.registerAttribute((EntityPlayer)(Object)this);
  }
+
+ @Inject(method={"setSpawnPoint","func_180473_a"},at=@At("HEAD")) private void mcm$bed(net.minecraft.util.BlockPos pos,boolean forced,CallbackInfo ci) { com.glowingfederal.moderncombatmovement.compat.AnchorRespawn.clearForBed((EntityPlayer)(Object)this); }
 }
