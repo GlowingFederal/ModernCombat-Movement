@@ -17,6 +17,7 @@ public abstract class ModernHandMixin {
  @Shadow(aliases="field_78454_c")private float equippedProgress;
  @Shadow(aliases="field_78451_d")private float prevEquippedProgress;
  @Inject(method={"renderItemInFirstPerson","func_78440_a"},at=@At("HEAD"),cancellable=true)private void mcm$crossbow(float partial,CallbackInfo ci){
+  com.glowingfederal.moderncombatmovement.render.OffhandClient.firstPerson(partial);
   Minecraft mc=Minecraft.getMinecraft();EntityPlayerSP p=mc.thePlayer;
   if(p==null||!com.glowingfederal.moderncombatmovement.config.Settings.kit(true)||(!Crossbows.known(itemToRender)&&ModernEquipment.spear(itemToRender)==null))return;
   ci.cancel();float pitch=p.prevRotationPitch+(p.rotationPitch-p.prevRotationPitch)*partial,yaw=p.prevRotationYaw+(p.rotationYaw-p.prevRotationYaw)*partial;
@@ -29,4 +30,6 @@ public abstract class ModernHandMixin {
   try{if(Crossbows.known(itemToRender)){CrossbowHandTransforms.apply(HandMatrices.INSTANCE,1,1-(prevEquippedProgress+(equippedProgress-prevEquippedProgress)*partial),p.getSwingProgress(partial),p.getItemInUse()==itemToRender,p.getItemInUseDuration()+partial-1,Crossbows.chargeTime(itemToRender),Crossbows.charged(itemToRender),true);new CrossbowItemRenderer().renderFirstPersonModern(itemToRender,p);}else{SpearAnimationMath.firstPerson(HandMatrices.INSTANCE,ModernEquipment.spear(itemToRender),1,1-(prevEquippedProgress+(equippedProgress-prevEquippedProgress)*partial),p.getSwingProgress(partial),p.getItemInUse()==itemToRender?p.getItemInUseDuration()+partial:0);new SpearItemRenderer().renderModern(itemToRender,true);}}
   finally{GL11.glPopMatrix();GL11.glDisable(GL12.GL_RESCALE_NORMAL);RenderHelper.disableStandardItemLighting();}
  }
+ @Redirect(method={"renderItemInFirstPerson","func_78440_a"},at=@At(value="INVOKE",target="Lnet/minecraft/client/entity/EntityClientPlayerMP;getItemInUseCount()I"),require=0)private int mcm$mainUseMcp(net.minecraft.client.entity.EntityClientPlayerMP p){return com.glowingfederal.moderncombatmovement.offhand.Offhands.using(p)?0:p.getItemInUseCount();}
+ @Redirect(method={"renderItemInFirstPerson","func_78440_a"},at=@At(value="INVOKE",target="Lnet/minecraft/client/entity/EntityClientPlayerMP;func_71052_bv()I"),require=0)private int mcm$mainUseSrg(net.minecraft.client.entity.EntityClientPlayerMP p){return com.glowingfederal.moderncombatmovement.offhand.Offhands.using(p)?0:p.getItemInUseCount();}
 }

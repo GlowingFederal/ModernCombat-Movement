@@ -51,3 +51,11 @@ enchantment.moderncombatmovement.density=Density
 enchantment.moderncombatmovement.breach=Breach
 enchantment.moderncombatmovement.wind_burst=Wind Burst
 enchantment.moderncombatmovement.lunge=Lunge
+
+item.moderncombatmovement.trident.name=Trident
+enchantment.moderncombatmovement.loyalty=Loyalty
+enchantment.moderncombatmovement.impaling=Impaling
+enchantment.moderncombatmovement.riptide=Riptide
+enchantment.moderncombatmovement.channeling=Channeling
+
+item.moderncombatmovement.wind_charge.name=Wind Charge

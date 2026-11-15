@@ -19,6 +19,7 @@ public final class Crossbows {
  private Crossbows() {}
  public static boolean known(ItemStack stack) { if(stack.isEmpty()) return false; String id=CombatHooks.id(stack); return id.equals("moderncombatmovement:crossbow") || id.equals("etfuturum:crossbow"); }
  public static void register(File file) {
+  net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(new net.minecraft.util.ResourceLocation("moderncombatmovement:crossbow_rocket"),BoostRocket.class,"crossbow_rocket",6,ModernCombatMovement.instance,64,1,true);
   if(!Content.uab) { Item crossbow=new CrossbowItem(); crossbow.setRegistryName(Identity.MOD_ID,"crossbow");net.minecraftforge.fml.common.registry.GameRegistry.findRegistry(Item.class).register(crossbow); Content.ITEMS.put("crossbow",crossbow); net.minecraftforge.fml.common.registry.GameRegistry.addShapedRecipe(new net.minecraft.util.ResourceLocation(Identity.MOD_ID,"crossbow"),null,new ItemStack(crossbow),"SIS","THT"," S ",'S',Items.STICK,'I',Items.IRON_INGOT,'T',Items.STRING,'H',Blocks.TRIPWIRE_HOOK); }
   CombatApi.register((Content.uab ? "etfuturum" : Identity.MOD_ID)+":crossbow",new ItemProperties(ItemProperties.Kind.CROSSBOW,4,1,false,true));
   Configuration config=new Configuration(file);config.load();
@@ -35,14 +36,14 @@ public final class Crossbows {
  public static int chargeTime(ItemStack stack) { return CrossbowMath.chargeTicks(level(quickCharge,stack)); }
  public static int duration(ItemStack stack) { return chargeTime(stack)+3; }
  public static boolean charged(ItemStack stack) { return !stack.isEmpty() && stack.hasTagCompound() && stack.getTagCompound().getBoolean("Charged"); }
- private static boolean ammo(ItemStack stack) { if(stack.isEmpty()) return false; String id=CombatHooks.id(stack);return id.equals("minecraft:arrow") || id.equals("minecraft:tipped_arrow") || id.equals("minecraft:spectral_arrow") || id.equals("etfuturum:tipped_arrow") || id.equals("etfuturum:spectral_arrow"); }
+ private static boolean ammo(ItemStack stack) { if(stack.isEmpty()) return false; String id=CombatHooks.id(stack);return id.equals("minecraft:fireworks") || id.equals("minecraft:arrow") || id.equals("minecraft:tipped_arrow") || id.equals("minecraft:spectral_arrow") || id.equals("etfuturum:tipped_arrow") || id.equals("etfuturum:spectral_arrow"); }
  private static ItemStack ammunition(EntityPlayer p) {
   if(ammo(p.getHeldItemOffhand())) return p.getHeldItemOffhand(); if(ammo(p.getHeldItemMainhand())) return p.getHeldItemMainhand();
   for(int i=0;i<p.inventory.getSizeInventory();i++) { ItemStack stack=p.inventory.getStackInSlot(i); if(ammo(stack)) return stack; }
   return ItemStack.EMPTY;
  }
  public static boolean use(ItemStack stack,EntityPlayer p ,net.minecraft.util.EnumHand hand) {
-  if(!com.glowingfederal.moderncombatmovement.config.Settings.kit(p.world.isRemote)) return false;
+  if(!com.glowingfederal.moderncombatmovement.config.Settings.projectiles(p.world.isRemote)) return false;
   if(charged(stack)) { if(!p.world.isRemote) fire(stack,p); return true; }
   ItemStack ammunition=ammunition(p); if(ammunition.isEmpty() && !p.capabilities.isCreativeMode) return false;
   p.setActiveHand(hand); return true;
@@ -70,8 +71,10 @@ public final class Crossbows {
   int limit=Math.min(3,rounds.tagCount());
   for(int i=0;i<limit;i++) {
    ItemStack ammunition=new ItemStack(rounds.getCompoundTagAt(i)); if(!ammo(ammunition)) continue;
+   double[] direction=CrossbowMath.direction(p.rotationYaw,p.rotationPitch,i==0 ? 0 : i==1 ? -10 : 10);
+   if(CombatHooks.id(ammunition).equals("minecraft:fireworks")){if(p.world.spawnEntity(BoostRocket.crossbow(p.world,p,ammunition,direction)))stack.damageItem(3,p);continue;}
    CrossbowBolt bolt=new CrossbowBolt(p.world,p,ammunition,level(piercing,stack),i>0 || tag.getBoolean("CreativeCharge"));
-   double[] direction=CrossbowMath.direction(p.rotationYaw,p.rotationPitch,i==0 ? 0 : i==1 ? -10 : 10);bolt.launch(direction[0],direction[1],direction[2]);
+   bolt.launch(direction[0],direction[1],direction[2]);
    p.world.spawnEntity(bolt);stack.damageItem(1,p);
   }
   p.inventory.markDirty();

@@ -36,14 +36,16 @@ public final class Crossbows {
  public static int chargeTime(ItemStack stack) { return CrossbowMath.chargeTicks(level(quickCharge,stack)); }
  public static int duration(ItemStack stack) { return chargeTime(stack)+3; }
  public static boolean charged(ItemStack stack) { return stack!=null && stack.hasTagCompound() && stack.getTagCompound().getBoolean("Charged"); }
- private static boolean ammo(ItemStack stack) { if(stack==null) return false; String id=CombatHooks.id(stack);return id.equals("minecraft:arrow") || id.equals("minecraft:tipped_arrow") || id.equals("minecraft:spectral_arrow") || id.equals("etfuturum:tipped_arrow") || id.equals("etfuturum:spectral_arrow"); }
+ private static boolean ammo(ItemStack stack) { if(stack==null) return false; String id=CombatHooks.id(stack);return id.equals("minecraft:fireworks") || id.equals("minecraft:arrow") || id.equals("minecraft:tipped_arrow") || id.equals("minecraft:spectral_arrow") || id.equals("etfuturum:tipped_arrow") || id.equals("etfuturum:spectral_arrow"); }
  private static ItemStack ammunition(EntityPlayer p) {
+  ItemStack hand=com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p);if(ammo(hand)&&hand.stackSize>0)return hand;
+  hand=p.inventory.getCurrentItem();if(ammo(hand)&&hand.stackSize>0)return hand;
 
   for(int i=0;i<p.inventory.getSizeInventory();i++) { ItemStack stack=p.inventory.getStackInSlot(i); if(ammo(stack)) return stack; }
   return null;
  }
  public static boolean use(ItemStack stack,EntityPlayer p ) {
-  if(!com.glowingfederal.moderncombatmovement.config.Settings.kit(p.worldObj.isRemote)) return false;
+  if(!com.glowingfederal.moderncombatmovement.config.Settings.projectiles(p.worldObj.isRemote)) return false;
   if(charged(stack)) { if(!p.worldObj.isRemote) fire(stack,p); return true; }
   ItemStack ammunition=ammunition(p); if(ammunition==null && !p.capabilities.isCreativeMode) return false;
   p.setItemInUse(stack,duration(stack)); return true;
@@ -56,7 +58,7 @@ public final class Crossbows {
   if(p.worldObj.isRemote || charged(stack)) return;
   ItemStack source=ammunition(p); if(source==null && !p.capabilities.isCreativeMode) return;
   ItemStack saved=source==null ? new ItemStack(Items.arrow) : source.copy(); saved.stackSize=1;
-  if(!p.capabilities.isCreativeMode) --source.stackSize;
+  if(!p.capabilities.isCreativeMode){--source.stackSize;if(source.stackSize<=0&&source==com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p))com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);}
   if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
   NBTTagCompound tag=stack.getTagCompound(); NBTTagList rounds=new NBTTagList(); int count=level(multishot,stack)>0 ? 3 : 1;
   for(int i=0;i<count;i++) rounds.appendTag(saved.writeToNBT(new NBTTagCompound()));
@@ -71,8 +73,10 @@ public final class Crossbows {
   int limit=Math.min(3,rounds.tagCount());
   for(int i=0;i<limit;i++) {
    ItemStack ammunition=ItemStack.loadItemStackFromNBT(rounds.getCompoundTagAt(i)); if(!ammo(ammunition)) continue;
+   double[] direction=CrossbowMath.direction(p.rotationYaw,p.rotationPitch,i==0 ? 0 : i==1 ? -10 : 10);
+   if(CombatHooks.id(ammunition).equals("minecraft:fireworks")){if(p.worldObj.spawnEntityInWorld(BoostRocket.crossbow(p.worldObj,p,ammunition,direction)))stack.damageItem(3,p);continue;}
    CrossbowBolt bolt=new CrossbowBolt(p.worldObj,p,ammunition,level(piercing,stack),i>0 || tag.getBoolean("CreativeCharge"));
-   double[] direction=CrossbowMath.direction(p.rotationYaw,p.rotationPitch,i==0 ? 0 : i==1 ? -10 : 10);bolt.launch(direction[0],direction[1],direction[2]);
+   bolt.launch(direction[0],direction[1],direction[2]);
    p.worldObj.spawnEntityInWorld(bolt);stack.damageItem(1,p);
   }
   p.inventory.markDirty();

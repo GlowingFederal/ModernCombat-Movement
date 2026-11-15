@@ -17,8 +17,9 @@ public final class Totems {
  @SubscribeEvent(priority=EventPriority.HIGHEST) public void death(LivingDeathEvent e) {
   EntityLivingBase living=e.entityLiving;
   if(living.worldObj.isRemote || !com.glowingfederal.moderncombatmovement.config.Settings.kit(false) || e.source.canHarmInCreative()) return;
-  ItemStack stack=living.getHeldItem();if(!known(stack)) return;
-  if(--stack.stackSize<=0) { if(living instanceof EntityPlayer) ((EntityPlayer)living).inventory.setInventorySlotContents(((EntityPlayer)living).inventory.currentItem,null);else living.setCurrentItemOrArmor(0,null); }
+  ItemStack stack=living.getHeldItem();boolean off=false;
+  if(!known(stack)&&living instanceof EntityPlayer){stack=com.glowingfederal.moderncombatmovement.offhand.Offhands.get((EntityPlayer)living);off=true;}if(!known(stack))return;
+  if(--stack.stackSize<=0) { if(off)com.glowingfederal.moderncombatmovement.offhand.Offhands.set((EntityPlayer)living,null);else if(living instanceof EntityPlayer) ((EntityPlayer)living).inventory.setInventorySlotContents(((EntityPlayer)living).inventory.currentItem,null);else living.setCurrentItemOrArmor(0,null); }
   e.setCanceled(true);living.clearActivePotions();living.setHealth(1);
   living.addPotionEffect(new PotionEffect(Potion.regeneration.id,900,1));living.addPotionEffect(new PotionEffect(Potion.potionTypes[22].id,100,1));living.addPotionEffect(new PotionEffect(Potion.fireResistance.id,800,0));
   living.worldObj.playSoundAtEntity(living,"random.levelup",1,1);living.worldObj.setEntityState(living,(byte)35);

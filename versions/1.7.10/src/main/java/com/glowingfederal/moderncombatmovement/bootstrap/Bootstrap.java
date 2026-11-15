@@ -14,8 +14,8 @@ import java.util.Arrays;
 public final class Bootstrap implements IFMLLoadingPlugin, IEarlyMixinLoader {
  public String getMixinConfig() { return "mixins.moderncombatmovement.json"; }
  public List<String> getMixins(Set<String> loadedCoreMods) {
-  List<String> mixins=new ArrayList<String>(Arrays.asList("FireworkUseMixin","FlightPacketMixin","UabFlightBridgeMixin","FlightMixin","FlightTravelMixin","PlayerMixin","LivingMixin","CombatMixin","WebMixin","WebMovementMixin","SlimeMixin","CrossbowArrowMixin","EquipmentEnchantMixin","ForgeArmorMixin","LivingArmorMixin","CrystalMixin","TeleportMotionMixin","GoldenAppleMixin","ProtectionMixin","EyeQueryMixin"));
-  if(cpw.mods.fml.relauncher.FMLLaunchHandler.side().isClient()) mixins.addAll(Arrays.asList("InputMixin","CameraMixin","RenderPlayerMixin","ModelMixin","ElytraRenderMixin","ModernHandMixin","SpearInputMixin","PlayerUseMovementMixin","PotionCreativeMixin","CrystalRenderMixin","PlayerEyeClientMixin"));
+  List<String> mixins=new ArrayList<String>(Arrays.asList("OffhandEntityMixin","OffhandFishingMixin","ShieldDamageMixin","ShieldPlayerMixin","OffhandCreativePacketMixin","OffhandSwordMixin","OffhandPlayerMixin","OffhandInventoryMixin","OffhandContainerMixin","FireworkUseMixin","FlightPacketMixin","UabFlightBridgeMixin","FlightMixin","FlightTravelMixin","PlayerMixin","LivingMixin","CombatMixin","WebMixin","WebMovementMixin","SlimeMixin","CrossbowArrowMixin","EquipmentEnchantMixin","ForgeArmorMixin","LivingArmorMixin","CrystalMixin","TeleportMotionMixin","GoldenAppleMixin","ProtectionMixin","EyeQueryMixin"));
+  if(cpw.mods.fml.relauncher.FMLLaunchHandler.side().isClient()) mixins.addAll(Arrays.asList("OffhandCreativeGuiMixin","OffhandObserverMixin","OffhandInputMixin","OffhandControllerMixin","OffhandSlotBackgroundMixin","OffhandGuiMixin","OffhandRenderMixin","InputMixin","CameraMixin","RenderPlayerMixin","ModelMixin","ElytraRenderMixin","ModernHandMixin","SpearInputMixin","PlayerUseMovementMixin","PotionCreativeMixin","CrystalRenderMixin","PlayerEyeClientMixin"));
   return mixins;
  }
  public String[] getASMTransformerClass() { return new String[0]; }

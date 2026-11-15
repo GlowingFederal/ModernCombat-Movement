@@ -1,0 +1,5 @@
+package com.glowingfederal.moderncombatmovement.mixins.uab;
+import net.minecraft.item.ItemStack;import net.minecraft.world.World;import net.minecraft.entity.player.EntityPlayer;import org.spongepowered.asm.mixin.*;import org.spongepowered.asm.mixin.injection.*;import org.spongepowered.asm.mixin.injection.callback.*;import com.glowingfederal.moderncombatmovement.compat.WindCharges;import com.glowingfederal.moderncombatmovement.config.Settings;
+@Pseudo @Mixin(targets="ganymedes01.etfuturum.WindChargeItem",remap=false)public abstract class WindChargeUabMixin {
+@Inject(method={"onItemRightClick","func_77659_a"},at=@At("HEAD"),cancellable=true)private void mcm$use(World w,EntityPlayer p,net.minecraft.util.EnumHand hand,CallbackInfoReturnable<net.minecraft.util.ActionResult<ItemStack>> ci){if(Settings.projectiles(w.isRemote))ci.setReturnValue(new net.minecraft.util.ActionResult<ItemStack>(WindCharges.use(p.getHeldItem(hand),p)?net.minecraft.util.EnumActionResult.SUCCESS:net.minecraft.util.EnumActionResult.FAIL,p.getHeldItem(hand)));}
+}

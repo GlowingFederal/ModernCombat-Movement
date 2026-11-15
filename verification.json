@@ -17,7 +17,14 @@
     "{package_path}/compat/Crystals.class",
     "{package_path}/movement/FlightHooks.class",
     "{package_path}/movement/FlightTravel.class",
-    "{package_path}/render/ElytraWings.class"
+    "{package_path}/render/ElytraWings.class",
+    "{package_path}/compat/Shields.class",
+    "{package_path}/compat/Tridents.class",
+    "{package_path}/compat/TridentProjectile.class",
+    "{package_path}/compat/WindCharges.class",
+    "{package_path}/compat/WindChargeProjectile.class",
+    "{package_path}/mixins/ShieldDamageMixin.class",
+    "{package_path}/mixins/ShieldPlayerMixin.class"
   ],
   "required_shared_classes": [
     "{package_path}/pose/PoseRules.class",
@@ -39,7 +46,11 @@
     "assets/{mod_id}/textures/items/mace.png",
     "assets/{mod_id}/textures/items/iron_spear.png",
     "assets/{mod_id}/textures/items/copper_helmet.png",
-    "assets/{mod_id}/textures/entity/elytra.png"
+    "assets/{mod_id}/textures/entity/elytra.png",
+    "META-INF/UAB-LGPL-3.0.txt",
+    "assets/{mod_id}/textures/items/trident.png",
+    "assets/{mod_id}/textures/items/wind_charge.png",
+    "assets/{mod_id}/textures/entity/trident.png"
   ],
   "metadata_profiles": {
     "legacy": {
@@ -129,11 +140,19 @@
       "metadata_profile": "legacy",
       "required_classes": [
         "{package_path}/compat/ElytraItem.class",
-        "{package_path}/compat/BoostRocket.class"
+        "{package_path}/compat/BoostRocket.class",
+        "{package_path}/offhand/OffhandAccess.class",
+        "{package_path}/offhand/OffhandInventory.class",
+        "{package_path}/offhand/Offhands.class",
+        "{package_path}/offhand/OffhandUses.class",
+        "{package_path}/render/OffhandClient.class",
+        "{package_path}/offhand/OffhandEntities.class",
+        "{package_path}/compat/ShieldItem.class"
       ],
       "required_assets": [
         "assets/{mod_id}/textures/items/elytra.png",
-        "assets/{mod_id}/textures/items/elytra_broken.png"
+        "assets/{mod_id}/textures/items/elytra_broken.png",
+        "assets/{mod_id}/textures/entity/shield_base_nopattern.png"
       ],
       "json_checks": [],
       "remapping": {
@@ -158,11 +177,19 @@
       "metadata_profile": "legacy",
       "required_classes": [
         "{package_path}/compat/ElytraItem.class",
-        "{package_path}/compat/BoostRocket.class"
+        "{package_path}/compat/BoostRocket.class",
+        "{package_path}/offhand/OffhandAccess.class",
+        "{package_path}/offhand/OffhandInventory.class",
+        "{package_path}/offhand/Offhands.class",
+        "{package_path}/offhand/OffhandUses.class",
+        "{package_path}/render/OffhandClient.class",
+        "{package_path}/offhand/OffhandEntities.class",
+        "{package_path}/compat/ShieldItem.class"
       ],
       "required_assets": [
         "assets/{mod_id}/textures/items/elytra.png",
-        "assets/{mod_id}/textures/items/elytra_broken.png"
+        "assets/{mod_id}/textures/items/elytra_broken.png",
+        "assets/{mod_id}/textures/entity/shield_base_nopattern.png"
       ],
       "json_checks": [],
       "remapping": {

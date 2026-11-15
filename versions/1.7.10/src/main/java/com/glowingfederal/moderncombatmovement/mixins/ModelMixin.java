@@ -13,6 +13,7 @@ public abstract class ModelMixin {
  @org.spongepowered.asm.mixin.Unique private float mcm$spearSwing;
  @org.spongepowered.asm.mixin.Unique private boolean mcm$spear;
  @Inject(method={"setRotationAngles","func_78087_a"},at=@At("HEAD")) private void mcm$crouch(float limb,float amount,float age,float yaw,float pitch,float scale,Entity entity,CallbackInfo ci) {
+  if(entity instanceof EntityPlayer)((ModelBiped)(Object)this).heldItemLeft=com.glowingfederal.moderncombatmovement.offhand.Offhands.get((EntityPlayer)entity)==null?0:1;
   mcm$spear=entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.render.SpearPoses.owned((EntityPlayer)entity);
   if(mcm$spear){mcm$spearSwing=((ModelBiped)(Object)this).onGround;((ModelBiped)(Object)this).onGround=0;}
 
@@ -23,6 +24,6 @@ public abstract class ModelMixin {
 
   if(mcm$spear){((ModelBiped)(Object)this).onGround=mcm$spearSwing;com.glowingfederal.moderncombatmovement.render.SpearPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age,mcm$spearSwing);}
 
-  if(Settings.rendering && entity instanceof EntityPlayer) com.glowingfederal.moderncombatmovement.render.CrossbowPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age);
+  if(Settings.rendering && entity instanceof EntityPlayer) {com.glowingfederal.moderncombatmovement.render.CrossbowPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age);com.glowingfederal.moderncombatmovement.render.OffhandClient.pose((ModelBiped)(Object)this,(EntityPlayer)entity);}
  }
 }

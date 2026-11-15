@@ -41,6 +41,7 @@ public abstract class LivingMixin implements com.glowingfederal.moderncombatmove
 
  @Inject(method={"knockBack","func_70653_a"},at=@At("HEAD"),cancellable=true) private void mcm$knockback(net.minecraft.entity.Entity attacker,float strength,double x,double z,CallbackInfo ci) {
   EntityLivingBase p=(EntityLivingBase)(Object)this;
+  if(((com.glowingfederal.moderncombatmovement.combat.ShieldBlockAccess)p).mcm$fullyBlocked()){ci.cancel();return;}
   if(mcm$source instanceof com.glowingfederal.moderncombatmovement.combat.SpearDamageSource||mcm$source instanceof com.glowingfederal.moderncombatmovement.combat.CombatBlastDamageSource){ci.cancel();return;}
   if(com.glowingfederal.moderncombatmovement.config.Settings.knockback(p.worldObj.isRemote) && com.glowingfederal.moderncombatmovement.combat.CombatHooks.managed(mcm$source)) {
    if(mcm$source instanceof com.glowingfederal.moderncombatmovement.compat.BoostRocketDamage){net.minecraft.entity.Entity projectile=mcm$source.getSourceOfDamage();x=projectile.posX-p.posX;z=projectile.posZ-p.posZ;}

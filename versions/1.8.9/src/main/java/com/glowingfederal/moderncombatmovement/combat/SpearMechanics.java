@@ -4,6 +4,7 @@ import java.util.*;
 import net.minecraft.entity.*;
 import net.minecraft.entity.player.*;
 import net.minecraft.enchantment.EnchantmentHelper;
+import net.minecraft.enchantment.Enchantment;
 import net.minecraft.item.ItemStack;
 import net.minecraft.potion.*;
 import net.minecraft.util.*;
@@ -36,15 +37,15 @@ public final class SpearMechanics {
    state.spearContacts.put(target.getUniqueID(),now);
    double relative=Math.max(0,speed-projection(target,look)*20);
    boolean dismount=spec.dismount(elapsed,speed),knockback=spec.knockback(elapsed,speed),damage=spec.damage(elapsed,relative);
-   if(dismount||knockback||damage)stab(p,target,spec.chargeDamage(base,relative),damage,knockback,dismount);
+   if(dismount||knockback||damage)stab(p,stack,target,spec.chargeDamage(base,relative),damage,knockback,dismount);
   }
  }
  public static boolean jab(EntityPlayer p){
-  if(!owned(p)||p.worldObj.isRemote||!p.isEntityAlive()||p.isSpectator())return false;
+  if(p.isUsingItem()||!owned(p)||p.worldObj.isRemote||!p.isEntityAlive()||p.isSpectator())return false;
   CombatHooks.update(p);PlayerState state=PlayerHooks.state(p);
   if(CombatMath.strength(state.attackTicks,0,CombatHooks.speed(p))<1)return false;
   ItemStack stack=CombatHooks.held(p);float base=CombatHooks.attackDamage(p);
-  net.minecraft.util.Vec3 look=p.getLookVec();for(Entity target:targets(p,look))stab(p,target,base,true,true,false);
+  net.minecraft.util.Vec3 look=p.getLookVec();for(Entity target:targets(p,look))stab(p,stack,target,base,true,true,false);
   state.attackTicks=0;
   lunge(p,stack);p.swingItem();p.addExhaustion(.1F);return true;
  }
@@ -54,24 +55,24 @@ public final class SpearMechanics {
   net.minecraft.util.Vec3 look=p.getLookVec();p.addVelocity(look.xCoord*.458F*level,0,look.zCoord*.458F*level);
   stack.damageItem(1,p);p.addExhaustion(4*level);sync(p);
  }
- private static boolean stab(EntityPlayer p,Entity target,float base,boolean hurt,boolean knockback,boolean dismount){
+ private static boolean stab(EntityPlayer p,ItemStack stack,Entity target,float base,boolean hurt,boolean knockback,boolean dismount){
   if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.AttackEntityEvent(p,target)))return false;
-  ItemStack stack=CombatHooks.held(p);float enchanted=0;
+  float enchanted=0;
   if(target instanceof EntityLivingBase){enchanted=EnchantmentHelper.getModifierForCreature(stack,((EntityLivingBase)target).getCreatureAttribute());}
-  int fire=EnchantmentHelper.getFireAspectModifier(p);boolean temporary=hurt&&fire>0&&!target.isBurning();if(temporary)target.setFire(1);
+  int fire=EnchantmentHelper.getEnchantmentLevel(Enchantment.fireAspect.effectId,stack);boolean temporary=hurt&&fire>0&&!target.isBurning();if(temporary)target.setFire(1);
   double vx=target.motionX,vy=target.motionY,vz=target.motionZ;
   boolean damaged=hurt&&target.attackEntityFrom(new SpearDamageSource(p),Math.max(0,base+enchanted));
   if(!damaged&&temporary)target.extinguish();
   if(knockback){
-   int bonus=target instanceof EntityLivingBase?EnchantmentHelper.getKnockbackModifier(p):0;double yaw=p.rotationYaw*Math.PI/180;
+   int bonus=target instanceof EntityLivingBase?EnchantmentHelper.getEnchantmentLevel(Enchantment.knockback.effectId,stack):0;double yaw=p.rotationYaw*Math.PI/180;
    if(target instanceof EntityLivingBase){if(Settings.knockback(false))KnockbackHooks.apply((EntityLivingBase)target,p,.4F+bonus*.5F,Math.sin(yaw),-Math.cos(yaw));else((EntityLivingBase)target).knockBack(p,.4F+bonus*.5F,Math.sin(yaw),-Math.cos(yaw));}
    else target.addVelocity(-Math.sin(yaw)*(.4+bonus*.5),.1,Math.cos(yaw)*(.4+bonus*.5));
    p.motionX*=.6;p.motionZ*=.6;p.setSprinting(false);PlayerHooks.state(p).sprinting=false;
   }
   boolean dismounted=false;if(dismount&&target.ridingEntity!=null){target.mountEntity(null);dismounted=true;}
   if(damaged||knockback||dismounted){
-   if(damaged&&target instanceof EntityLivingBase){EnchantmentHelper.applyThornEnchantments((EntityLivingBase)target,p);EnchantmentHelper.applyArthropodEnchantments(p,target);}
-   if(stack!=null&&target instanceof EntityLivingBase){stack.hitEntity((EntityLivingBase)target,p);if(stack.stackSize<=0)p.destroyCurrentEquippedItem();}
+   if(damaged&&target instanceof EntityLivingBase){EnchantmentHelper.applyThornEnchantments((EntityLivingBase)target,p);for(java.util.Map.Entry<Integer,Integer> entry:EnchantmentHelper.getEnchantments(stack).entrySet()){Enchantment effect=Enchantment.getEnchantmentById(entry.getKey());if(effect!=null)effect.onEntityDamaged(p,target,entry.getValue());}}
+   if(stack!=null&&target instanceof EntityLivingBase){stack.hitEntity((EntityLivingBase)target,p);if(stack.stackSize<=0){if(stack==com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p))com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);else p.destroyCurrentEquippedItem();}}
    if(damaged&&fire>0)target.setFire(fire*4);
    if(target instanceof EntityPlayerMP&&target.velocityChanged){sync(target);target.velocityChanged=false;target.motionX=vx;target.motionY=vy;target.motionZ=vz;}
    p.addExhaustion(.1F);return true;

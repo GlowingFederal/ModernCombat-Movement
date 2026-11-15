@@ -5,6 +5,7 @@ public final class PlayerState {
     public boolean swimming, jump, ownedDimensions;
     public float eye = 1.62F, previousEye = 1.62F, swimAmount, previousSwimAmount;
     public int lastSent = -1, attackTicks;
+    public int shieldCooldown,windCooldown;
     public Object lastWeapon;
     public double jumpVelocity;
     public boolean sprinting, wasForward;

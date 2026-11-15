@@ -10,6 +10,8 @@
     "CrossbowUabMixin",
     "MaceUabMixin",
     "SpearUabMixin",
-    "SpearLungeUabMixin"
+    "SpearLungeUabMixin",
+    "TridentUabMixin",
+    "WindChargeUabMixin"
   ]
 }

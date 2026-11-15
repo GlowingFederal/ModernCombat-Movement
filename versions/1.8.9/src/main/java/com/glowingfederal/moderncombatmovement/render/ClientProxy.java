@@ -19,6 +19,11 @@ public final class ClientProxy extends CommonProxy {
  private volatile boolean disconnected;
  private boolean lastJump;
  public void init() {
+  net.minecraft.item.Item wind=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge");if(wind!=null)net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(wind,0,new net.minecraft.client.resources.model.ModelResourceLocation("moderncombatmovement:wind_charge","inventory"));net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.WindChargeProjectile.class,manager->new net.minecraft.client.renderer.entity.RenderSnowball(manager,com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge")!=null?com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge"):net.minecraft.init.Items.snowball,net.minecraft.client.Minecraft.getMinecraft().getRenderItem()));
+  net.minecraft.item.Item standaloneTrident=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("trident");if(standaloneTrident!=null)net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(standaloneTrident,0,new net.minecraft.client.resources.model.ModelResourceLocation("moderncombatmovement:trident","inventory"));
+  net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.TridentProjectile.class,manager->new TridentRenderer(manager));
+  OffhandClient.init();
+  net.minecraft.item.Item shield=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("shield");if(shield!=null)net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(shield,0,new net.minecraft.client.resources.model.ModelResourceLocation("moderncombatmovement:shield","inventory"));
   final net.minecraft.item.Item glider=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("elytra");
   if(glider!=null){final net.minecraft.client.resources.model.ModelResourceLocation intact=new net.minecraft.client.resources.model.ModelResourceLocation("moderncombatmovement:elytra","inventory"),broken=new net.minecraft.client.resources.model.ModelResourceLocation("moderncombatmovement:elytra_broken","inventory");net.minecraft.client.resources.model.ModelBakery.registerItemVariants(glider,new net.minecraft.util.ResourceLocation("moderncombatmovement:elytra"),new net.minecraft.util.ResourceLocation("moderncombatmovement:elytra_broken"));net.minecraftforge.client.model.ModelLoader.setCustomMeshDefinition(glider,stack->stack.getItemDamage()>=stack.getMaxDamage()-1?broken:intact);}
 
@@ -54,6 +59,7 @@ public final class ClientProxy extends CommonProxy {
   if(e.phase!=TickEvent.Phase.START) return;
   ElytraLayers.install();
   Minecraft mc=Minecraft.getMinecraft();
+  com.glowingfederal.moderncombatmovement.render.OffhandClient.tick();
   if(disconnected || mc.theWorld==null) { pending.clear(); Settings.resetRemote(); disconnected=false; return; }
   for(Packets.Snapshot packet : pending.values()) {
    if(packet.dimension!=mc.theWorld.provider.getDimensionId()) { pending.remove(packet.uuid,packet); continue; }
@@ -61,6 +67,7 @@ public final class ClientProxy extends CommonProxy {
    if(!(entity instanceof EntityPlayer) || !entity.getUniqueID().equals(packet.uuid)) continue;
    EntityPlayer p=(EntityPlayer)entity;
    Settings.acceptPolicy(packet.policy);
+   com.glowingfederal.moderncombatmovement.render.OffhandClient.apply(p,packet);
    PlayerState s=PlayerHooks.state(p); s.pose=packet.pose; s.swimming=packet.swimming;
    if(PlayerHooks.active(p)) PlayerHooks.dimensions(p);
    pending.remove(packet.uuid,packet);

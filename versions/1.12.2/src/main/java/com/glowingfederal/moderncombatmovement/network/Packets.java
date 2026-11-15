@@ -69,8 +69,8 @@ public final class Packets {
   public int dimension,id,policy; public UUID uuid; public Pose pose; public boolean swimming;
   public Snapshot() {}
   public Snapshot(EntityPlayer p) { dimension=p.dimension; id=p.getEntityId(); uuid=p.getUniqueID(); policy=Settings.localPolicy; pose=PlayerHooks.state(p).pose; swimming=PlayerHooks.state(p).swimming; }
-  public void fromBytes(ByteBuf b) { dimension=b.readInt(); id=b.readInt(); uuid=new UUID(b.readLong(),b.readLong()); policy=b.readUnsignedByte(); int index=b.readUnsignedByte(); if(index>=Pose.values().length || (policy&~127)!=0) throw new IllegalArgumentException("Invalid MCM snapshot"); pose=Pose.values()[index]; swimming=b.readBoolean(); }
-  public void toBytes(ByteBuf b) { b.writeInt(dimension); b.writeInt(id); b.writeLong(uuid.getMostSignificantBits()); b.writeLong(uuid.getLeastSignificantBits()); b.writeByte(policy); b.writeByte(pose.ordinal()); b.writeBoolean(swimming); }
+  public void fromBytes(ByteBuf b) { dimension=b.readInt(); id=b.readInt(); uuid=new UUID(b.readLong(),b.readLong()); policy=b.readUnsignedShort(); int index=b.readUnsignedByte(); if(index>=Pose.values().length || (policy&~1023)!=0) throw new IllegalArgumentException("Invalid MCM snapshot"); pose=Pose.values()[index]; swimming=b.readBoolean(); }
+  public void toBytes(ByteBuf b) { b.writeInt(dimension); b.writeInt(id); b.writeLong(uuid.getMostSignificantBits()); b.writeLong(uuid.getLeastSignificantBits()); b.writeShort(policy); b.writeByte(pose.ordinal()); b.writeBoolean(swimming); }
  }
  public static final class SnapshotHandler implements IMessageHandler<Snapshot,IMessage> {
   public IMessage onMessage(Snapshot m,MessageContext ctx) { ModernCombatMovement.proxy.receive(m); return null; }

@@ -1,0 +1,214 @@
+{
+  "textures": {
+    "particle": "moderncombatmovement:entity/shield_base_nopattern",
+    "shield": "moderncombatmovement:entity/shield_base_nopattern"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        -3,
+        7
+      ],
+      "to": [
+        14,
+        19,
+        8
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shield",
+          "uv": [
+            0.25,
+            6,
+            3.25,
+            11.5
+          ]
+        },
+        "south": {
+          "texture": "#shield",
+          "uv": [
+            3.5,
+            6,
+            6.5,
+            11.5
+          ]
+        },
+        "west": {
+          "texture": "#shield",
+          "uv": [
+            0,
+            6,
+            0.25,
+            11.5
+          ]
+        },
+        "east": {
+          "texture": "#shield",
+          "uv": [
+            3.25,
+            6,
+            3.5,
+            11.5
+          ]
+        },
+        "up": {
+          "texture": "#shield",
+          "uv": [
+            0.25,
+            5.75,
+            3.25,
+            6
+          ]
+        },
+        "down": {
+          "texture": "#shield",
+          "uv": [
+            3.25,
+            5.75,
+            6.25,
+            6
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        5,
+        8
+      ],
+      "to": [
+        9,
+        11,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        },
+        "south": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        },
+        "east": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        },
+        "west": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        },
+        "up": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        },
+        "down": {
+          "texture": "#shield",
+          "uv": [
+            6.5,
+            1.5,
+            7,
+            3
+          ]
+        }
+      }
+    }
+  ],
+  "display": {
+    "firstperson": {
+      "rotation": [
+        0,
+        180,
+        5
+      ],
+      "translation": [
+        -5,
+        1,
+        -5
+      ],
+      "scale": [
+        1.25,
+        1.25,
+        1.25
+      ]
+    },
+    "thirdperson": {
+      "rotation": [
+        0,
+        90,
+        0
+      ],
+      "translation": [
+        10,
+        6,
+        -4
+      ],
+      "scale": [
+        1,
+        1,
+        1
+      ]
+    },
+    "gui": {
+      "rotation": [
+        15,
+        -25,
+        -5
+      ],
+      "translation": [
+        2,
+        -2,
+        0
+      ],
+      "scale": [
+        0.65,
+        0.65,
+        0.65
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.5,
+        0.5,
+        0.5
+      ]
+    }
+  }
+}

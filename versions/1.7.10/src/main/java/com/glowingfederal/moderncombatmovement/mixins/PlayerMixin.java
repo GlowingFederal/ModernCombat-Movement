@@ -8,11 +8,17 @@ import org.spongepowered.asm.mixin.injection.callback.*;
 import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.ModernCombatMovement;
 @Mixin(value=EntityPlayer.class, remap=false)
-public abstract class PlayerMixin implements PlayerAccess,com.glowingfederal.moderncombatmovement.combat.PlayerUseAccess {
+public abstract class PlayerMixin implements com.glowingfederal.moderncombatmovement.offhand.OffhandAccess,PlayerAccess,com.glowingfederal.moderncombatmovement.combat.PlayerUseAccess {
  @org.spongepowered.asm.mixin.Shadow(aliases="field_71074_e")private net.minecraft.item.ItemStack itemInUse;
  @org.spongepowered.asm.mixin.Shadow(aliases="field_71072_f")private int itemInUseCount;
  public net.minecraft.item.ItemStack mcm$useStack(){return itemInUse;}
  public int mcm$useRemaining(){return itemInUseCount;}
+ public void mcm$useRemaining(int ticks){itemInUseCount=ticks;}
+ @Unique private com.glowingfederal.moderncombatmovement.offhand.OffhandInventory mcm$offhand;
+ @Unique private boolean mcm$offhandUsing;
+ public com.glowingfederal.moderncombatmovement.offhand.OffhandInventory mcm$offhand(){if(mcm$offhand==null)mcm$offhand=new com.glowingfederal.moderncombatmovement.offhand.OffhandInventory((EntityPlayer)(Object)this);return mcm$offhand;}
+ public boolean mcm$offhandUsing(){return mcm$offhandUsing;}
+ public void mcm$offhandUsing(boolean value){mcm$offhandUsing=value;}
  @Unique private final PlayerState mcm$state=new PlayerState();
  public PlayerState mcm$state() { return mcm$state; }
  @Inject(method={"onUpdate","func_70071_h_"},at=@At("HEAD")) private void mcm$before(CallbackInfo ci) { PlayerHooks.before((EntityPlayer)(Object)this); }

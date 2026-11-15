@@ -22,6 +22,7 @@ public final class LegacyAttack {
   float strength=CombatMath.strength(state.attackTicks,.5F,CombatHooks.speed(p)); state.attackTicks=0;
   float base=CombatHooks.attackDamage(p);
   float enchanted=EnchantmentHelper.getModifierForCreature(stack,target instanceof EntityLivingBase ? ((EntityLivingBase)target).getCreatureAttribute() : EnumCreatureAttribute.UNDEFINED);
+  if(com.glowingfederal.moderncombatmovement.compat.Tridents.known(stack)&&target instanceof net.minecraft.entity.passive.EntityWaterMob)enchanted+=2.5F*com.glowingfederal.moderncombatmovement.compat.Tridents.level(com.glowingfederal.moderncombatmovement.compat.Tridents.impaling,stack);
   int sharp=stack==null ? 0 : EnchantmentHelper.getEnchantmentLevel(Enchantment.sharpness.effectId,stack);
   if(sharp>0) enchanted+=.5F+.5F*sharp-1.25F*sharp;
   boolean critical=CombatMath.critical(strength,p.fallDistance,p.onGround,p.isOnLadder(),p.isInWater(),p.isPotionActive(Potion.blindness),p.isRiding(),p.isSprinting(),target instanceof EntityLivingBase);

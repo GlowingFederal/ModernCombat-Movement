@@ -19,6 +19,10 @@ public final class ClientProxy extends CommonProxy {
  private volatile boolean disconnected;
  private boolean lastJump;
  public void init() {
+  cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.WindChargeProjectile.class,new net.minecraft.client.renderer.entity.RenderSnowball(cpw.mods.fml.common.registry.GameRegistry.findItem(com.glowingfederal.moderncombatmovement.compat.Content.uab?"etfuturum":"moderncombatmovement","wind_charge")));
+  cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.TridentProjectile.class,new TridentRenderer());
+  OffhandClient.init();
+  net.minecraft.item.Item shield=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("shield");if(shield!=null)net.minecraftforge.client.MinecraftForgeClient.registerItemRenderer(shield,new ShieldItemRenderer());
   cpw.mods.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.BoostRocket.class,new net.minecraft.client.renderer.entity.RenderSnowball(net.minecraft.init.Items.fireworks));
   SpearItemRenderer spearRenderer=new SpearItemRenderer();net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(spearRenderer);
   for(com.glowingfederal.moderncombatmovement.combat.SpearSpec spec:com.glowingfederal.moderncombatmovement.combat.SpearSpec.values()){net.minecraft.item.Item item=cpw.mods.fml.common.registry.GameRegistry.findItem(com.glowingfederal.moderncombatmovement.compat.Content.uab?"etfuturum":"moderncombatmovement",spec.material+"_spear");if(item!=null)net.minecraftforge.client.MinecraftForgeClient.registerItemRenderer(item,spearRenderer);}
@@ -34,6 +38,7 @@ public final class ClientProxy extends CommonProxy {
  @SubscribeEvent public void tick(TickEvent.ClientTickEvent e) {
   if(e.phase!=TickEvent.Phase.START) return;
   Minecraft mc=Minecraft.getMinecraft();
+  com.glowingfederal.moderncombatmovement.render.OffhandClient.tick();
   if(disconnected || mc.theWorld==null) { pending.clear(); Settings.resetRemote(); disconnected=false; return; }
   for(Packets.Snapshot packet : pending.values()) {
    if(packet.dimension!=mc.theWorld.provider.dimensionId) { pending.remove(packet.uuid,packet); continue; }
@@ -41,6 +46,7 @@ public final class ClientProxy extends CommonProxy {
    if(!(entity instanceof EntityPlayer) || !entity.getUniqueID().equals(packet.uuid)) continue;
    EntityPlayer p=(EntityPlayer)entity;
    Settings.acceptPolicy(packet.policy);
+   com.glowingfederal.moderncombatmovement.render.OffhandClient.apply(p,packet);
    PlayerState s=PlayerHooks.state(p); s.pose=packet.pose; s.swimming=packet.swimming;
    if(PlayerHooks.active(p)) PlayerHooks.dimensions(p);
    pending.remove(packet.uuid,packet);

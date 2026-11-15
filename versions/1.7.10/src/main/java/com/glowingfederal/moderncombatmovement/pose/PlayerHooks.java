@@ -11,7 +11,12 @@ public final class PlayerHooks {
  public static PlayerState state(EntityPlayer p) { return ((PlayerAccess)p).mcm$state(); }
  public static boolean active(EntityPlayer p) { return Settings.movement(p.worldObj.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && p.ridingEntity==null && !p.capabilities.isFlying && !com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p); }
  public static void before(EntityPlayer p) {
+  com.glowingfederal.moderncombatmovement.compat.WindCharges.tick(p);
   PlayerState s=state(p);
+  if(s.shieldCooldown>0)s.shieldCooldown--;
+  if(com.glowingfederal.moderncombatmovement.offhand.Offhands.inventory(p).swingTicks>0)com.glowingfederal.moderncombatmovement.offhand.Offhands.inventory(p).swingTicks--;
+  net.minecraft.item.ItemStack offhand=com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p);
+  if(offhand!=null){if(offhand.stackSize<=0)com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);else offhand.updateAnimation(p.worldObj,p,40,false);}
   com.glowingfederal.moderncombatmovement.combat.SpearMechanics.clearInactive(p);
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.update(p);
   if(!p.worldObj.isRemote) Packets.consume(p);

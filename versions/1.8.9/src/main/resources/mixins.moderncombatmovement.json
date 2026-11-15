@@ -22,7 +22,16 @@
     "FlightMixin",
     "FlightTravelMixin",
     "FireworkUseMixin",
-    "FlightPacketMixin"
+    "FlightPacketMixin",
+    "OffhandPlayerMixin",
+    "OffhandInventoryMixin",
+    "OffhandContainerMixin",
+    "OffhandSwordMixin",
+    "OffhandCreativePacketMixin",
+    "ShieldDamageMixin",
+    "ShieldPlayerMixin",
+    "OffhandEntityMixin",
+    "OffhandFishingMixin"
   ],
   "client": [
     "InputMixin",
@@ -34,7 +43,14 @@
     "PotionCreativeMixin",
     "CrystalRenderMixin",
     "ModernHandMixin",
-    "ElytraRenderMixin"
+    "ElytraRenderMixin",
+    "OffhandGuiMixin",
+    "OffhandRenderMixin",
+    "OffhandInputMixin",
+    "OffhandControllerMixin",
+    "OffhandSlotBackgroundMixin",
+    "OffhandObserverMixin",
+    "OffhandCreativeGuiMixin"
   ],
   "injectors": {
     "defaultRequire": 1

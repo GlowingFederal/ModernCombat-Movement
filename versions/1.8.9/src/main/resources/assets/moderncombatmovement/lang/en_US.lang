@@ -54,3 +54,16 @@ enchantment.moderncombatmovement.wind_burst=Wind Burst
 enchantment.moderncombatmovement.lunge=Lunge
 
 item.moderncombatmovement.elytra.name=Elytra
+
+key.moderncombatmovement.swapHands=Swap Hands
+container.moderncombatmovement.offhand=Offhand
+
+item.moderncombatmovement.shield.name=Shield
+
+item.moderncombatmovement.trident.name=Trident
+enchantment.moderncombatmovement.loyalty=Loyalty
+enchantment.moderncombatmovement.impaling=Impaling
+enchantment.moderncombatmovement.riptide=Riptide
+enchantment.moderncombatmovement.channeling=Channeling
+
+item.moderncombatmovement.wind_charge.name=Wind Charge

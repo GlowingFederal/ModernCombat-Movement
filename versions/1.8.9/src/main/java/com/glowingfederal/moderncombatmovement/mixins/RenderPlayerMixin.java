@@ -17,4 +17,6 @@ public abstract class RenderPlayerMixin {
   PlayerState s=PlayerHooks.state(p); float amount=s.swim(partial);
   if(amount>0) { GL11.glRotatef(amount*(-90-p.rotationPitch),1,0,0); GL11.glTranslatef(0,-amount,amount*.3F); }
  }
+ @Redirect(method={"doRender(Lnet/minecraft/client/entity/AbstractClientPlayer;DDDFF)V","func_76986_a(Lnet/minecraft/client/entity/AbstractClientPlayer;DDDFF)V"},at=@At(value="INVOKE",target="Lnet/minecraft/client/entity/AbstractClientPlayer;getItemInUseCount()I"),require=0)private int mcm$mainUseMcp(net.minecraft.client.entity.AbstractClientPlayer p){return com.glowingfederal.moderncombatmovement.offhand.Offhands.using(p)?0:p.getItemInUseCount();}
+ @Redirect(method={"doRender(Lnet/minecraft/client/entity/AbstractClientPlayer;DDDFF)V","func_76986_a(Lnet/minecraft/client/entity/AbstractClientPlayer;DDDFF)V"},at=@At(value="INVOKE",target="Lnet/minecraft/client/entity/AbstractClientPlayer;func_71052_bv()I"),require=0)private int mcm$mainUseSrg(net.minecraft.client.entity.AbstractClientPlayer p){return com.glowingfederal.moderncombatmovement.offhand.Offhands.using(p)?0:p.getItemInUseCount();}
 }

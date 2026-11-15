@@ -18,6 +18,7 @@ public final class CombatBlast extends Explosion {
  private final double x,y,z;
  private final float radius,windMultiplier;
  private final boolean wind,wet;
+ private boolean windCharge;
  private final Entity owner,source;
  private final CombatBlastDamageSource damage;
  private CombatBlast(World level,Entity source,Entity owner,double x,double y,double z,float radius,boolean wind,boolean wet,float multiplier){
@@ -28,6 +29,7 @@ public final class CombatBlast extends Explosion {
  }
  public static void anchor(World w,int x,int y,int z,boolean wet){run(new CombatBlast(w,null,null,x+.5,y+.5,z+.5,5,false,wet,1));}
  public static void crystal(World w,Entity source,Entity owner,double x,double y,double z){run(new CombatBlast(w,source,owner,x,y,z,6,false,false,1));}
+ public static void charge(World w,Entity owner,double x,double y,double z){CombatBlast blast=new CombatBlast(w,null,owner,x,y,z,1.2F,true,false,1.22F);blast.windCharge=true;run(blast);}
  public static void wind(World w,Entity owner,double x,double y,double z,float radius,float multiplier){run(new CombatBlast(w,null,owner,x,y,z,radius,true,false,multiplier));}
  private static void run(CombatBlast blast){
   World w=blast.level;if(w.isRemote||net.minecraftforge.event.ForgeEventFactory.onExplosionStart(w,blast))return;
@@ -60,11 +62,14 @@ public final class CombatBlast extends Explosion {
    double distance=Math.sqrt(entity.getDistanceSq(x,y,z))/reach;if(distance>1)continue;
    double dx=entity.posX-x,dy=entity.posY+(entity instanceof EntityTNTPrimed?0:entity.getEyeHeight())-y,dz=entity.posZ-z,length=Math.sqrt(dx*dx+dy*dy+dz*dz);
    double exposure=level.getBlockDensity(new Vec3(x,y,z),entity.getEntityBoundingBox()),impact=(1-distance)*exposure;
+   boolean shielded=!wind&&entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.compat.Shields.canBlock((EntityPlayer)entity,damage);
    if(!wind)entity.attackEntityFrom(damage,WeaponMath.explosionDamage(distance,exposure,radius));
+   if(shielded)continue;
    double multiplier=wind?windMultiplier:1;
    if(wind&&entity instanceof EntityPlayer&&((EntityPlayer)entity).capabilities.isFlying)multiplier=0;
    double power=impact*multiplier*(Settings.knockback(false)?1-ArmorRules.explosionResistance(entity):1);
    Vec3 velocity=new Vec3(length==0?0:dx/length*power,length==0?0:dy/length*power,length==0?0:dz/length*power);
+   if(windCharge&&entity instanceof EntityLivingBase)com.glowingfederal.moderncombatmovement.compat.WindCharges.launched((EntityLivingBase)entity);
    entity.addVelocity(velocity.xCoord,velocity.yCoord,velocity.zCoord);
    if(entity instanceof EntityPlayer&&!((EntityPlayer)entity).isSpectator()&&(!((EntityPlayer)entity).capabilities.isCreativeMode||!((EntityPlayer)entity).capabilities.isFlying))getPlayerKnockbackMap().put((EntityPlayer)entity,velocity);
   }
@@ -78,8 +83,8 @@ public final class CombatBlast extends Explosion {
    boolean toggle=block instanceof BlockLever||block instanceof BlockButton||(block instanceof BlockFenceGate||block instanceof BlockDoor||block instanceof BlockTrapDoor)&&block.getMaterial()!=Material.iron;
    if(!toggle)continue;
    if(!(block instanceof BlockLever)&&level.isBlockPowered(position))continue;
-   if(block instanceof BlockFenceGate&&owner==null){level.setBlockState(position,level.getBlockState(position).cycleProperty(BlockFenceGate.OPEN),3);continue;}
-   block.onBlockActivated(level,position,level.getBlockState(position),null,EnumFacing.UP,.5F,.5F,.5F);
+   if(block instanceof BlockFenceGate&&!(owner instanceof EntityPlayer)){level.setBlockState(position,level.getBlockState(position).cycleProperty(BlockFenceGate.OPEN),3);continue;}
+   block.onBlockActivated(level,position,level.getBlockState(position),owner instanceof EntityPlayer?(EntityPlayer)owner:null,EnumFacing.UP,.5F,.5F,.5F);
   }
  }
 }

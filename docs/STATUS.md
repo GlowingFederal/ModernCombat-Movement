@@ -1,19 +1,19 @@
-# Initial development milestone status
+# Development status
 
-Development build: **0.1.0.13**. Forge 1.7.10, 1.8.9 and 1.12.2 distributions run Java 8. This is an implemented foundation and expanded combat-kit milestone, not complete modern gameplay parity. Modern rules remain the intended specification on every target.
+Development build: **0.1.0.16**. Forge 1.7.10, 1.8.9 and 1.12.2 distributions run Java 8. This is an implemented foundation and expanded combat-kit milestone, not complete modern gameplay parity. Modern rules remain the intended specification on every target.
 
 ## Implemented
 
 - Independent Forge targets, centralized next-build allocation and verified distributable JARs in root `build/release`; shared platform-neutral Java 8 calculations and explicit item-property/cooldown integration API.
 - Sided initialization, configuration, coalesced network intents, server-owned player poses, observer tracking and collision-safe dimensions. Initial modern movement/swimming/crawling corrections, feet-anchored eyes and basic third-person poses.
 - Scoped legacy melee cooldown/scaling/critical/sprint/sweep foundation and native 1.12 corrections. Known-gear armor/toughness, Strength/Weakness, protection, netherite resistance and owned explosion-resistance rules. Unknown foreign weapons, armor and projectiles retain their defined owner.
-- Standalone copper/netherite equipment, seven spear tiers, mace, crossbows, legacy main-hand totems, anchors, placed crystals and four modern effects. UAB registrations are reused and selected behavior is adapted without duplicate ownership. See COMBAT-KIT.md for remaining families.
+- Standalone copper/netherite equipment, seven spear tiers, mace, crossbows, legacy either-hand totems, anchors, placed crystals and four modern effects. UAB registrations are reused and selected behavior is adapted without duplicate ownership. See COMBAT-KIT.md for remaining families.
 - Native-source spear jab/kinetic charge, reach/occlusion/contact cooldown, Lunge, mace smash/Density/Breach/Wind Burst, modern owned anchor/crystal explosions and legacy golden-apple effects. Native item consumption is preserved.
 - Standalone Elytra on 1.7/1.8, modern scoped flight on all targets, legacy attached rocket entities with boost/star damage, server durability/takeoff validation, .6-block flight box/.4-block eye, tracked wing interpolation and rendered equipment. UAB's chest Elytra shares the canonical flight owner. Foreign gliders are preserved.
 - Mandatory Modern Regen **1.0.2.2+** on 1.7. AppleCore owns its food update; 1.8 uses a narrow optional regeneration event bridge, and 1.12 retains native regeneration. AppleSkin's hunger HUD and synchronization are preserved.
 - LOTR Legacy combat and knockback are preserved by default, independently of movement and kit configuration. This is a compatibility exception, not modern LOTR combat parity.
 
-## Verification actually performed
+## Retained 0.1.0.13 verification
 
 | Evidence | 1.7.10 | 1.8.9 | 1.12.2 |
 |---|---|---|---|
@@ -42,9 +42,19 @@ All game callbacks run on the owning game thread through JDI in disposable insta
 
 Confirmed blocking defects corrected during this batch include the 1.8 Mixin runtime ABI mismatch, wrong Forge armor method case, a 1.12 Mixin-generated anonymous helper class, server access to client-only legacy item-use getters, legacy hurt damage being mistaken for knockback strength, and offhand spear enchantment/wear ownership. Final relevant callbacks pass. No performance measurements or full vanilla parity are claimed.
 
+## Legacy offhand continuation (0.1.0.16)
+
+Forge 1.7.10 and 1.8.9 now have a player-owned, persistent offhand inventory, appended native container slot, cursor/quick-move handling, F swaps in play and over eligible container slots, explicit active-use ownership, equipment snapshots and basic first/third-person rendering plus a hotbar display. Vanilla inventory/armor indices and registered item identities are preserved. Save/load, keepInventory, death drops and dimension clone rules follow the native player lifecycle. Storage stays available independently of combat configuration.
+
+Supported native/MCM callbacks receive the actual offhand stack. Food completion and its Forge event write the remainder to that hand. Modern managed swords pass use through rather than starting legacy sword blocking; foreign/LOTR sword ownership remains unchanged. Offhand crossbow ammunition and either-hand totems use the same canonical inventory. Spear charge enchantments and wear now follow the active legacy hand, as already implemented on 1.12.2. Unknown foreign items can be stored/rendered; use requires an explicit adapter when their callbacks assume the selected hotbar.
+
+The new work has twelve foundational server callback checks per legacy target: native container/cursor operations, quick-move, swapping/use cancellation, window/armor validation, NBT, clone/keepInventory, native drops, native food completion/remainder, crossbow ammunition, genuinely lethal either-hand totems, snapshot encoding and foreign-use exclusion. Connected clients additionally exercise the registered swap key and native right-click packet path; native framebuffer captures show the inventory slot and both equipped items. These are bounded mod-code checks, not a renewed vanilla, LOTR, UAB, food-mod or full gameplay qualification. An additional actual spear-charge callback on each legacy target checks offhand Fire Aspect and durability while the main spear remains untouched. Creative native packet updates, invalid/survival rejection, server restart/reconnection persistence and survival/creative framebuffer inventory output also pass. Final 0.1.0.16 distributions for all three targets pass production packaging, remapping, Java 8 archive checks and the 32 shared cases in each target. Root common tests pass the same 32 cases; those unchanged results are retained. Final 1.7/1.8 servers and clients run the byte-identical release JARs. The 1.12 runtime was not relaunched in this continuation. The twelve foundational checks and connected food/swap tests were established on 0.1.0.15; their implementation is unchanged in 0.1.0.16, which only relocates the creative slot and updates the build version. Final layout and spear checks run on 0.1.0.16.
+
+Full offhand parity remains unfinished: entity interaction/feeding, native fishing-hook ownership, non-player offhand equipment, exact per-item hand animations, custom inventory/render integration and latency/retracking coverage remain pending. Standalone shields and later native 1.12 shield rules have not been implemented in this continuation. No complete movement/combat parity is claimed.
+
 ## Remaining work and next priorities
 
-1. Real legacy offhand inventory, persistence, swaps, use priority, equipment synchronization and rendering, followed by standalone shields. Native 1.12 shields still require all later behavioral corrections; their presence is not an exemption.
+1. Finish the listed offhand interaction/animation boundaries, then implement standalone shields and their modern rules across all targets. Native 1.12 shields still require later behavioral corrections; their presence is not an exemption.
 2. Remaining kit families and behavior: tridents, standalone wind charges, crossbow fireworks, missing combat potions/ammunition, pearl/collision/cooldown differences, full equipment components and durability/repair/fire-immunity audit. Ground-launched legacy fireworks retain their old behavior.
 3. Full combat enchantment/sweep/shield/hurt-time/reach and timing audit; native 26.3 interaction corrections; controlled vanilla 1.21.11/26.3 traces and representative latency tests. PvP HQ is observational reference only; no custom PvP profile is implemented.
 4. Finish lava/blocks/effects, modern ledge/step protection, complete swimming/crawling/weapon animation and detailed flight landing/wall/obstruction acceptance. Existing movement corrections are not complete movement parity.

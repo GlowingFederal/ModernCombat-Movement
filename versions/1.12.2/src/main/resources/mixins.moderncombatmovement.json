@@ -20,7 +20,9 @@
     "FlightMixin",
     "FlightTravelMixin",
     "FireworkUseMixin",
-    "FireworkFlightMixin"
+    "FireworkFlightMixin",
+    "ShieldDamageMixin",
+    "ShieldPlayerMixin"
   ],
   "client": [
     "InputMixin",

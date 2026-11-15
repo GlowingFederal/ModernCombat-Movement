@@ -11,6 +11,7 @@ public final class PlayerHooks {
  public static PlayerState state(EntityPlayer p) { return ((PlayerAccess)p).mcm$state(); }
  public static boolean active(EntityPlayer p) { return Settings.movement(p.world.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && !p.isSpectator() && !p.isRiding() && !p.capabilities.isFlying && !com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p); }
  public static void before(EntityPlayer p) {
+  com.glowingfederal.moderncombatmovement.compat.WindCharges.tick(p);
   PlayerState s=state(p);
   com.glowingfederal.moderncombatmovement.combat.SpearMechanics.clearInactive(p);
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.update(p);
