@@ -10,7 +10,11 @@ import org.spongepowered.asm.mixin.extensibility.IMixinInfo;
 public final class MixinSelection implements IMixinConfigPlugin {
     public void onLoad(String mixinPackage) {}
     public String getRefMapperConfig() { return null; }
-    public boolean shouldApplyMixin(String target,String mixin) {
+    public boolean shouldApplyMixin(String target,String mixin) {boolean mcmDevelopment=Boolean.TRUE.equals(net.minecraft.launchwrapper.Launch.blackboard.get("fml.deobfuscatedEnvironment"));if(mixin.endsWith(".FlightSpeedDevMixin"))return mcmDevelopment;if(mixin.endsWith(".FlightSpeedMixin"))return !mcmDevelopment;
+        boolean development=Boolean.TRUE.equals(net.minecraft.launchwrapper.Launch.blackboard.get("fml.deobfuscatedEnvironment"));
+        if(mixin.endsWith(".ArrowGroundMixin"))return development;
+        if(mixin.endsWith(".ArrowGroundSrgMixin"))return !development;
+        if((mixin.endsWith(".FireproofItemMixin")||mixin.endsWith(".AnchorNativeRespawnMixin")||mixin.endsWith(".AnchorSpawnPointMixin"))&&net.minecraft.launchwrapper.Launch.classLoader.getResource("ganymedes01/etfuturum/RespawnAnchors.class")!=null)return false;
         return !mixin.endsWith(".FoodRegenMixin") || net.minecraft.launchwrapper.Launch.classLoader.getResource(
                 "squeek/applecore/api/hunger/HealthRegenEvent$AllowRegen.class")==null;
     }

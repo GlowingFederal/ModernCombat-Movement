@@ -19,6 +19,7 @@ public abstract class PlayerMixin implements com.glowingfederal.moderncombatmove
  public com.glowingfederal.moderncombatmovement.offhand.OffhandInventory mcm$offhand(){if(mcm$offhand==null)mcm$offhand=new com.glowingfederal.moderncombatmovement.offhand.OffhandInventory((EntityPlayer)(Object)this);return mcm$offhand;}
  public boolean mcm$offhandUsing(){return mcm$offhandUsing;}
  public void mcm$offhandUsing(boolean value){mcm$offhandUsing=value;}
+ @Inject(method={"writeEntityToNBT","func_70014_b"},at=@At("RETURN")) private void mcm$saveSpeed(net.minecraft.nbt.NBTTagCompound data,CallbackInfo ci){com.glowingfederal.moderncombatmovement.movement.CreativeFlight.save((EntityPlayer)(Object)this,data);}
  @Unique private final PlayerState mcm$state=new PlayerState();
  public PlayerState mcm$state() { return mcm$state; }
  @Inject(method={"onUpdate","func_70071_h_"},at=@At("HEAD")) private void mcm$before(CallbackInfo ci) { PlayerHooks.before((EntityPlayer)(Object)this); }
@@ -36,5 +37,4 @@ public abstract class PlayerMixin implements com.glowingfederal.moderncombatmove
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.registerAttribute((EntityPlayer)(Object)this);
  }
 
- @Inject(method={"setSpawnPoint","func_180473_a"},at=@At("HEAD")) private void mcm$bed(net.minecraft.util.BlockPos pos,boolean forced,CallbackInfo ci) { com.glowingfederal.moderncombatmovement.compat.AnchorRespawn.clearForBed((EntityPlayer)(Object)this); }
 }

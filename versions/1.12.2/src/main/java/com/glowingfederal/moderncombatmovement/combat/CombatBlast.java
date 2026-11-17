@@ -35,10 +35,10 @@ public final class CombatBlast extends Explosion {
  private static void run(CombatBlast blast){
   World w=blast.level;if(w.isRemote||net.minecraftforge.event.ForgeEventFactory.onExplosionStart(w,blast))return;
   blast.doExplosionA();
-  if(blast.wind){blast.triggerBlocks();blast.getAffectedBlockPositions().clear();w.playSound(null,blast.x,blast.y,blast.z,net.minecraft.init.SoundEvents.ENTITY_GENERIC_EXPLODE,SoundCategory.BLOCKS,.8F,1.5F);}
+  if(blast.wind){blast.triggerBlocks();blast.getAffectedBlockPositions().clear();com.glowingfederal.moderncombatmovement.compat.ItemSounds.at(w,blast.x,blast.y,blast.z,blast.windCharge?"entity.wind_charge.wind_burst":"entity.breeze.wind_burst",1,1);}
   else blast.doExplosionB(false);
   for(Object object:w.playerEntities){EntityPlayer p=(EntityPlayer)object;if(p instanceof EntityPlayerMP&&p.getDistanceSq(blast.x,blast.y,blast.z)<4096)
-   ((EntityPlayerMP)p).connection.sendPacket(new net.minecraft.network.play.server.SPacketExplosion(blast.x,blast.y,blast.z,blast.radius,blast.getAffectedBlockPositions(),(Vec3d)blast.getPlayerKnockbackMap().get(p)));
+   {if(blast.wind){Vec3d motion=(Vec3d)blast.getPlayerKnockbackMap().get(p);com.glowingfederal.moderncombatmovement.network.Packets.channel.sendTo(new com.glowingfederal.moderncombatmovement.network.Packets.Feedback(p,0,blast.x,blast.y,blast.z,blast.radius,motion==null?0:motion.x,motion==null?0:motion.y,motion==null?0:motion.z),(EntityPlayerMP)p);}else ((EntityPlayerMP)p).connection.sendPacket(new net.minecraft.network.play.server.SPacketExplosion(blast.x,blast.y,blast.z,blast.radius,blast.getAffectedBlockPositions(),(Vec3d)blast.getPlayerKnockbackMap().get(p))); }
   }
  }
  @Override public void doExplosionA(){
@@ -78,6 +78,7 @@ public final class CombatBlast extends Explosion {
  private void triggerBlocks(){
   Set<String> doors=new HashSet<String>();
   for(Object object:getAffectedBlockPositions()){BlockPos position=(BlockPos)object;int bx=position.getX(),by=position.getY(),bz=position.getZ();Block block=level.getBlockState(position).getBlock();
+   if(com.glowingfederal.moderncombatmovement.compat.UabCombatBlocks.wind(level,bx,by,bz))continue;
    Object key=net.minecraft.block.Block.REGISTRY.getNameForObject(block);if(key==null||!key.toString().startsWith("minecraft:"))continue;
    if(block==Blocks.FIRE){level.setBlockToAir(position);continue;}
    boolean door=block instanceof BlockDoor;if(door){int bottom=by;if(level.getBlockState(position).getValue(BlockDoor.HALF)==BlockDoor.EnumDoorHalf.UPPER)bottom--;if(!doors.add(bx+","+bottom+","+bz))continue;}

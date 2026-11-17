@@ -19,6 +19,7 @@ public final class TridentRenderer extends Render<TridentProjectile> {
             GlStateManager.rotate(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial - 90, 0, 1, 0);
             GlStateManager.rotate(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partial + 90, 0, 0, 1);
             model.render();
+            ModelGlint.render(entity.enchanted(),entity.ticksExisted+partial,.33333334F,()->model.render(),TridentModel.TEXTURE);
         } finally { GlStateManager.popMatrix(); }
         super.doRender(entity, x, y, z, yaw, partial);
     }

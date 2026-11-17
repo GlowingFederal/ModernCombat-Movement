@@ -67,3 +67,69 @@ enchantment.moderncombatmovement.riptide=Riptide
 enchantment.moderncombatmovement.channeling=Channeling
 
 item.moderncombatmovement.wind_charge.name=Wind Charge
+
+enchantment.moderncombatmovement.mending=Mending
+enchantment.moderncombatmovement.sweeping=Sweeping Edge
+
+item.moderncombatmovement.lingering_potion.name=Lingering Potion
+potion.prefix.lingering=Lingering
+
+effect.moderncombatmovement.slow_falling=Slow Falling
+item.moderncombatmovement.potion.weaving.drink=Potion of Weaving
+item.moderncombatmovement.potion.weaving.splash=Splash Potion of Weaving
+item.moderncombatmovement.potion.weaving.lingering=Lingering Potion of Weaving
+effect.moderncombatmovement.weaving.postfix=Potion of Weaving
+item.moderncombatmovement.potion.oozing.drink=Potion of Oozing
+item.moderncombatmovement.potion.oozing.splash=Splash Potion of Oozing
+item.moderncombatmovement.potion.oozing.lingering=Lingering Potion of Oozing
+effect.moderncombatmovement.oozing.postfix=Potion of Oozing
+item.moderncombatmovement.potion.infested.drink=Potion of Infestation
+item.moderncombatmovement.potion.infested.splash=Splash Potion of Infestation
+item.moderncombatmovement.potion.infested.lingering=Lingering Potion of Infestation
+effect.moderncombatmovement.infested.postfix=Potion of Infestation
+item.moderncombatmovement.potion.wind_charged.drink=Potion of Wind Charging
+item.moderncombatmovement.potion.wind_charged.splash=Splash Potion of Wind Charging
+item.moderncombatmovement.potion.wind_charged.lingering=Lingering Potion of Wind Charging
+effect.moderncombatmovement.wind_charged.postfix=Potion of Wind Charging
+item.moderncombatmovement.potion.slow_falling.drink=Potion of Slow Falling
+item.moderncombatmovement.potion.slow_falling.splash=Splash Potion of Slow Falling
+item.moderncombatmovement.potion.slow_falling.lingering=Lingering Potion of Slow Falling
+effect.moderncombatmovement.slow_falling.postfix=Potion of Slow Falling
+item.moderncombatmovement.potion.turtle_master.drink=Potion of the Turtle Master
+item.moderncombatmovement.potion.turtle_master.splash=Splash Potion of the Turtle Master
+item.moderncombatmovement.potion.turtle_master.lingering=Lingering Potion of the Turtle Master
+effect.moderncombatmovement.turtle_master.postfix=Potion of the Turtle Master
+
+item.moderncombatmovement.potion.slowness.drink=Potion of Slowness
+item.moderncombatmovement.potion.slowness.splash=Splash Potion of Slowness
+item.moderncombatmovement.potion.slowness.lingering=Lingering Potion of Slowness
+
+item.moderncombatmovement.spectral_arrow.name=Spectral Arrow
+item.moderncombatmovement.tipped_arrow.name=Tipped Arrow
+item.moderncombatmovement.tipped_arrow.effect.empty.name=Arrow of Splashing
+effect.moderncombatmovement.glowing=Glowing
+
+item.moderncombatmovement.tipped_arrow.name=Tipped Arrow
+item.moderncombatmovement.tipped_arrow.effect.empty.name=Uncraftable Tipped Arrow
+item.moderncombatmovement.tipped_arrow.potion.nightVision.name=Arrow of Night Vision
+item.moderncombatmovement.tipped_arrow.potion.invisibility.name=Arrow of Invisibility
+item.moderncombatmovement.tipped_arrow.potion.jump.name=Arrow of Leaping
+item.moderncombatmovement.tipped_arrow.potion.fireResistance.name=Arrow of Fire Resistance
+item.moderncombatmovement.tipped_arrow.potion.moveSpeed.name=Arrow of Swiftness
+item.moderncombatmovement.tipped_arrow.potion.moveSlowdown.name=Arrow of Slowness
+item.moderncombatmovement.tipped_arrow.potion.waterBreathing.name=Arrow of Water Breathing
+item.moderncombatmovement.tipped_arrow.potion.heal.name=Arrow of Healing
+item.moderncombatmovement.tipped_arrow.potion.harm.name=Arrow of Harming
+item.moderncombatmovement.tipped_arrow.potion.poison.name=Arrow of Poison
+item.moderncombatmovement.tipped_arrow.potion.regeneration.name=Arrow of Regeneration
+item.moderncombatmovement.tipped_arrow.potion.damageBoost.name=Arrow of Strength
+item.moderncombatmovement.tipped_arrow.potion.weakness.name=Arrow of Weakness
+item.moderncombatmovement.tipped_arrow.potion.confusion.name=Arrow of Nausea
+item.moderncombatmovement.tipped_arrow.potion.wither.name=Arrow of Withering
+item.moderncombatmovement.arrow.weaving=Arrow of Weaving
+item.moderncombatmovement.arrow.oozing=Arrow of Oozing
+item.moderncombatmovement.arrow.infested=Arrow of Infestation
+item.moderncombatmovement.arrow.wind_charged=Arrow of Wind Charging
+item.moderncombatmovement.arrow.slow_falling=Arrow of Slow Falling
+item.moderncombatmovement.arrow.turtle_master=Arrow of the Turtle Master
+item.moderncombatmovement.arrow.slowness=Arrow of Slowness

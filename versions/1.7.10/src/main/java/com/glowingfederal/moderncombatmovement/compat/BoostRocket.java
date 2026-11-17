@@ -23,30 +23,19 @@ public final class BoostRocket extends Entity implements cpw.mods.fml.common.reg
  public ItemStack item(){return dataWatcher.getWatchableObjectItemStack(8);}
  private NBTTagCompound fireworks(){ItemStack stack=item();return stack!=null&&stack.hasTagCompound()?stack.getTagCompound().getCompoundTag("Fireworks"):new NBTTagCompound();}
  @Override public void onUpdate(){
-  super.onUpdate();prevPosX=posX;prevPosY=posY;prevPosZ=posZ;
+  super.onUpdate();prevPosX=posX;prevPosY=posY;prevPosZ=posZ;boolean collision=false;
   if(owner==null){Entity e=worldObj.getEntityByID(dataWatcher.getWatchableObjectInt(9));if(e instanceof EntityPlayer)owner=(EntityPlayer)e;else if(!worldObj.isRemote&&ownerId!=null)owner=worldObj.func_152378_a(ownerId);}
   if(dataWatcher.getWatchableObjectInt(9)>=0&&owner!=null&&owner.isEntityAlive()&&owner.worldObj==worldObj){
    double offsetX=0,offsetZ=0;
    if(FlightHooks.flying(owner)){Vec3 look=owner.getLookVec();FlightMotion speed=PlayerHooks.state(owner).flightMotion;speed.set(owner.motionX,owner.motionY,owner.motionZ);FlightMath.boost(speed,look.xCoord,look.yCoord,look.zCoord);owner.motionX=speed.x;owner.motionY=speed.y;owner.motionZ=speed.z;float angle=(owner.rotationYaw+80)*(float)(Math.PI/180);offsetX=-MathHelper.sin(angle)*.5;offsetZ=MathHelper.cos(angle)*.5;}
-   setPosition(owner.posX+offsetX,owner.boundingBox.minY,owner.posZ+offsetZ);motionX=owner.motionX;motionY=owner.motionY;motionZ=owner.motionZ;
-  }else{if(!shotAtAngle){motionX*= isCollidedHorizontally?1:1.15;motionZ*=isCollidedHorizontally?1:1.15;motionY+=.04;}moveEntity(motionX,motionY,motionZ);}
+   setPosition(owner.posX+offsetX,owner.boundingBox.minY,owner.posZ+offsetZ);motionX=owner.motionX;motionY=owner.motionY;motionZ=owner.motionZ;collision=!worldObj.isRemote&&RocketEffects.hits(this,owner,motionX,motionY,motionZ,RocketEffects.stars(item()));
+  }else{if(!shotAtAngle){motionX*= isCollidedHorizontally?1:1.15;motionZ*=isCollidedHorizontally?1:1.15;motionY+=.04;}collision=!worldObj.isRemote&&RocketEffects.hits(this,owner,motionX,motionY,motionZ,RocketEffects.stars(item()));double attemptedX=motionX,attemptedY=motionY,attemptedZ=motionZ;moveEntity(motionX,motionY,motionZ);motionX=attemptedX;motionY=attemptedY;motionZ=attemptedZ;}
   if(life==0)worldObj.playSoundAtEntity(this,"fireworks.launch",3,1);life++;
   if(worldObj.isRemote)worldObj.spawnParticle("fireworksSpark",posX,posY,posZ,rand.nextGaussian()*.05,-motionY*.5,rand.nextGaussian()*.05);
-  if(!worldObj.isRemote){boolean stars=fireworks().getTagList("Explosions",10).tagCount()>0;MovingObjectPosition hit=worldObj.func_147447_a(Vec3.createVectorHelper(posX,posY,posZ),Vec3.createVectorHelper(posX+motionX,posY+motionY,posZ+motionZ),false,true,false);if(life>lifetime||hitsEntity(hit)||stars&&hit!=null)explode();}
+  if(!worldObj.isRemote&&(life>lifetime||collision))explode();
  }
 
- private boolean hitsEntity(MovingObjectPosition obstruction){
-  double ex=posX+motionX,ey=posY+motionY,ez=posZ+motionZ;if(obstruction!=null){ex=obstruction.hitVec.xCoord;ey=obstruction.hitVec.yCoord;ez=obstruction.hitVec.zCoord;}
-  for(Object object:worldObj.getEntitiesWithinAABBExcludingEntity(this,boundingBox.addCoord(motionX,motionY,motionZ).expand(1,1,1))){Entity target=(Entity)object;if(target==owner||target.isDead||!target.canBeCollidedWith())continue;
-   AxisAlignedBB b=target.boundingBox.expand(.3,.3,.3);if(b.isVecInside(Vec3.createVectorHelper(posX,posY,posZ))||b.calculateIntercept(Vec3.createVectorHelper(posX,posY,posZ),Vec3.createVectorHelper(ex,ey,ez))!=null)return true;
-  }return false;
- }
- private void explode(){
-  worldObj.setEntityState(this,(byte)17);int stars=fireworks().getTagList("Explosions",10).tagCount();
-  if(stars>0){float damage=5+stars*2;BoostRocketDamage source=new BoostRocketDamage(this,owner);if(dataWatcher.getWatchableObjectInt(9)>=0&&owner!=null)owner.attackEntityFrom(source,damage);
-   for(Object object:worldObj.getEntitiesWithinAABB(EntityLivingBase.class,boundingBox.expand(5,5,5))){EntityLivingBase target=(EntityLivingBase)object;double distance=getDistanceToEntity(target);if(dataWatcher.getWatchableObjectInt(9)>=0&&target==owner||distance>5)continue;boolean visible=false;for(int i=0;i<2;i++)if(worldObj.func_147447_a(Vec3.createVectorHelper(posX,posY,posZ),Vec3.createVectorHelper(target.posX,target.boundingBox.minY+target.height*.5*i,target.posZ),false,true,false)==null){visible=true;break;}if(visible)target.attackEntityFrom(source,damage*(float)Math.sqrt((5-distance)/5));}
-  }setDead();
- }
+ private void explode(){worldObj.setEntityState(this,(byte)17);RocketEffects.damage(this,owner,dataWatcher.getWatchableObjectInt(9)>=0?owner:null,item());setDead();}
  @Override public void handleHealthUpdate(byte state){if(state==17)ModernCombatMovement.proxy.fireworks(worldObj,posX,posY,posZ,motionX,motionY,motionZ,fireworks());else super.handleHealthUpdate(state);}
  @Override protected void writeEntityToNBT(NBTTagCompound tag){tag.setBoolean("ShotAtAngle",shotAtAngle);tag.setInteger("Life",life);tag.setInteger("LifeTime",lifetime);if(ownerId!=null)tag.setString("Owner",ownerId.toString());NBTTagCompound stack=new NBTTagCompound();item().writeToNBT(stack);tag.setTag("FireworksItem",stack);}
  @Override protected void readEntityFromNBT(NBTTagCompound tag){shotAtAngle=tag.getBoolean("ShotAtAngle");life=tag.getInteger("Life");lifetime=tag.getInteger("LifeTime");ItemStack stack=ItemStack.loadItemStackFromNBT(tag.getCompoundTag("FireworksItem"));if(stack!=null)dataWatcher.updateObject(8,stack);if(tag.hasKey("Owner"))try{ownerId=UUID.fromString(tag.getString("Owner"));}catch(IllegalArgumentException invalid){ownerId=null;}}

@@ -31,7 +31,11 @@ public final class OffhandUses {
   Offhands.set(p,result);return p.isUsingItem()||result!=s||s.stackSize!=before||s.getItemDamage()!=damage;
  }
  public static void handle(EntityPlayerMP p,Packets.OffhandUse request){
-  if(request.dimension!=p.dimension)return;
+  if(request.playerId!=p.getEntityId()||request.dimension!=p.dimension)return;
+
+  com.glowingfederal.moderncombatmovement.pose.PlayerState state=com.glowingfederal.moderncombatmovement.pose.PlayerHooks.state(p);
+  if(request.serial!=0){if(!com.glowingfederal.moderncombatmovement.pose.UseSequence.newer(request.serial,state.offhandAckSerial))return;state.offhandAckSerial=request.serial;state.lastSent=-1;}
+
   if(request.release){if(Offhands.using(p))p.stopUsingItem();return;}
   if(!com.glowingfederal.moderncombatmovement.config.Settings.offhand(false)||!Offhands.allowed(p)||p.openContainer!=p.inventoryContainer||p.inventory.getItemStack()!=null||p.isUsingItem()||p.inventory.currentItem!=request.selected)return;
   ItemStack s=Offhands.get(p);if(!supported(s))return;
@@ -48,6 +52,7 @@ public final class OffhandUses {
    Adapter adapter=ADAPTERS.get(s.getItem());
    int count=s.stackSize,damage=s.getItemDamage();boolean used;
    if(adapter!=null)used=adapter.useOnBlock(s,p,x,y,z,request.side,request.hx,request.hy,request.hz);
+   else if(!p.isSneaking()&&event.useBlock!=cpw.mods.fml.common.eventhandler.Event.Result.DENY&&Anchors.use(p.worldObj,x,y,z,p,s))used=true;
    else used=s.tryPlaceItemIntoWorld(p,p.worldObj,x,y,z,request.side,request.hx,request.hy,request.hz);
    if(p.capabilities.isCreativeMode){s.stackSize=count;s.setItemDamage(damage);}
    if(s.stackSize<=0)Offhands.set(p,null);

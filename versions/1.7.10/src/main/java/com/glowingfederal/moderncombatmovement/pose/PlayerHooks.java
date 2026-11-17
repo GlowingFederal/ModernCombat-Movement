@@ -9,11 +9,16 @@ import com.glowingfederal.moderncombatmovement.network.Packets;
 public final class PlayerHooks {
  private PlayerHooks() {}
  public static PlayerState state(EntityPlayer p) { return ((PlayerAccess)p).mcm$state(); }
- public static boolean active(EntityPlayer p) { return Settings.movement(p.worldObj.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && p.ridingEntity==null && !p.capabilities.isFlying && !com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p); }
+ public static boolean active(EntityPlayer p) { return !com.glowingfederal.moderncombatmovement.compat.MovementCompat.owns(p) && Settings.movement(p.worldObj.isRemote) && p.isEntityAlive() && !p.isPlayerSleeping() && p.ridingEntity==null && !p.capabilities.isFlying && !com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p); }
  public static void before(EntityPlayer p) {
+  com.glowingfederal.moderncombatmovement.compat.Tridents.beforeSpin(p);
   com.glowingfederal.moderncombatmovement.compat.WindCharges.tick(p);
   PlayerState s=state(p);
+  if(active(p)){if(p.stepHeight==.5F){p.stepHeight=.6F;s.ownedStepHeight=true;}}
+  else if(s.ownedStepHeight){if(p.stepHeight==.6F)p.stepHeight=.5F;s.ownedStepHeight=false;}
+  if(s.kineticHitTicks<10)s.kineticHitTicks++;
   if(s.shieldCooldown>0)s.shieldCooldown--;
+  if(s.pearlCooldown>0)s.pearlCooldown--;
   if(com.glowingfederal.moderncombatmovement.offhand.Offhands.inventory(p).swingTicks>0)com.glowingfederal.moderncombatmovement.offhand.Offhands.inventory(p).swingTicks--;
   net.minecraft.item.ItemStack offhand=com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p);
   if(offhand!=null){if(offhand.stackSize<=0)com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);else offhand.updateAnimation(p.worldObj,p,40,false);}
@@ -21,16 +26,20 @@ public final class PlayerHooks {
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.update(p);
   if(!p.worldObj.isRemote) Packets.consume(p);
   com.glowingfederal.moderncombatmovement.movement.FlightHooks.tick(p);
+  com.glowingfederal.moderncombatmovement.movement.CreativeFlight.tick(p);
   if(!p.worldObj.isRemote || ModernCombatMovement.proxy.local(p)) update(p);
   if(p.worldObj.isRemote) {s.animate();s.wings.tick(com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying(p),s.pose==Pose.CROUCHING,p.motionX,p.motionY,p.motionZ);}
   if(s.attackTicks < Integer.MAX_VALUE) s.attackTicks++;
  }
  public static void after(EntityPlayer p) {
-  if(active(p)) dimensions(p); else release(p);
+  com.glowingfederal.moderncombatmovement.compat.Tridents.afterSpin(p);
+  if(active(p)||com.glowingfederal.moderncombatmovement.compat.Tridents.spinning(p)) dimensions(p); else release(p);
   if(!p.worldObj.isRemote && p instanceof net.minecraft.entity.player.EntityPlayerMP) Packets.publish(p);
  }
  public static void update(EntityPlayer p) {
   PlayerState s=state(p);
+  if(com.glowingfederal.moderncombatmovement.compat.MovementCompat.owns(p)){com.glowingfederal.moderncombatmovement.compat.MovementCompat.mirror(p);return;}
+  if(com.glowingfederal.moderncombatmovement.compat.Tridents.spinning(p)&&p.isEntityAlive()){s.pose=Pose.SPIN_ATTACK;s.swimming=false;dimensions(p);return;}
   if(!active(p)) { s.pose=Pose.STANDING; s.swimming=false; release(p); return; }
   if(com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying(p)) {s.pose=Pose.FALL_FLYING;s.swimming=false;dimensions(p);return;}
   s.swimming=Settings.swimming(p.worldObj.isRemote) && PoseRules.swimming(s.swimming,p.isSprinting(),p.isInWater(),p.isInsideOfMaterial(Material.water),p.ridingEntity!=null,p.capabilities.isFlying);
@@ -55,6 +64,7 @@ public final class PlayerHooks {
  }
  public static void release(EntityPlayer p) {
   PlayerState s=state(p);
+  if(com.glowingfederal.moderncombatmovement.compat.MovementCompat.owns(p)){s.ownedDimensions=false;return;}
   if(!s.ownedDimensions) return;
   if(!p.isEntityAlive() || com.glowingfederal.moderncombatmovement.movement.FlightHooks.foreignFlying(p) || p.isPlayerSleeping()) { s.ownedDimensions=false; return; }
   if(fits(p,Pose.STANDING)) { s.pose=Pose.STANDING; dimensions(p); s.ownedDimensions=false; }

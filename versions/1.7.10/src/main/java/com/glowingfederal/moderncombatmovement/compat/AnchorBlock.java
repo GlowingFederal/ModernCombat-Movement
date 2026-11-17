@@ -5,6 +5,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.world.*;
 public final class AnchorBlock extends Block {
+ @Override public boolean onBlockActivated(World world,int x,int y,int z,net.minecraft.entity.player.EntityPlayer player,int side,float hx,float hy,float hz){return Anchors.use(world,x,y,z,player,player.getHeldItem());}
 
  public AnchorBlock() { super(Material.rock); setBlockName("moderncombatmovement.respawn_anchor"); setHardness(50);setResistance(1200);setHarvestLevel("pickaxe",3);setCreativeTab(CreativeTabs.tabBlock);  }
  @cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT) private net.minecraft.util.IIcon[] icons;

@@ -40,15 +40,32 @@ public final class SpearAnimationMath {
         }
     }
     public static void firstPerson(CrossbowHandTransforms.Matrix m,SpearSpec spec,int sign,float equip,float swing,float using) {
-        m.translate(sign*.56F,-.52F+equip*-.6F,-.72F);
+        firstPerson(m,spec,sign,equip,swing,using>0,using,10);
+    }
+    public static void firstPerson(CrossbowHandTransforms.Matrix m,SpearSpec spec,int sign,float equip,float swing,boolean active,float using,float hitTicks) {
+        m.translate(sign*.56F,-.52F+(active?0:equip*-.6F),-.72F);
+        if(!active){
         float a=inOutSine(progress(swing,0,.05F)),b=outBack(progress(swing,.05F,.2F)),c=inOutExpo(progress(swing,.4F,1));
         m.translate(sign*.1F*(a-b),-.075F*(a-c),.65F*(a-b));
         m.rotate(-70*(a-c),1,0,0);m.translate(0,0,-.25*(c-b));
-        if(using<=0)return;
+        return;}
         Use u=new Use(spec,using);
         m.translate(sign*(u.raise*.15F+u.end*-.05F+u.sway*-.1F+u.slow*.005F),
                 u.raise*-.075F+u.middle*.075F+u.fast*.01F,u.start*.05+u.end*-.05+u.slow*.005F);
         m.translate(0,.1F,0);m.rotate(-65*inOutBack(u.raise)-35*u.lower+100*u.back-.5F*u.fast,1,0,0);m.translate(0,-.1F,0);
         m.translate(sign*.15F,0,0);m.rotate(sign*(-90*progress(u.raise,.5F,.55F)+90*u.sway+2*u.slow),0,-1,0);m.translate(-sign*.15F,0,0);
+        m.translate(0,-hitFeedback(hitTicks),0);
     }
+    public static float hitFeedback(float ticks){float a=progress(ticks,1,3),b=progress(ticks,3,10);return .4F*(1-(1-a)*(1-a)*(1-a)*(1-a)-inOutSine(b));}
+    /** Native SpearAnimations item pivots, in the modern arm-attachment coordinate system. */
+    public static void thirdPerson(CrossbowHandTransforms.Matrix m,SpearSpec spec,int sign,float swing,boolean active,float using,float hitTicks){
+        float b=inQuad(progress(swing,.05F,.2F)),c=inOutExpo(progress(swing,.4F,1));
+        if(active){Use u=new Use(spec,using);float f=1-outBack(1-u.raise),hit=hitFeedback(hitTicks);
+            m.translate(0,-hit*.4,-.38F*(f-u.back)+hit);
+            pivot(m,-70*(u.raise-u.back)+40*(b-c),1,0,0,0,-.03125F,.125F);
+            pivot(m,sign*90*(u.raise-u.sway+3*c+b),0,1,0,0,0,.125F);
+        }else if(swing>0){pivot(m,-70*(b-c),1,0,0,0,-.125F,.125F);m.translate(0,.38F*(b-c),0);}
+    }
+    private static void pivot(CrossbowHandTransforms.Matrix m,float angle,float x,float y,float z,float px,float py,float pz){m.translate(px,py,pz);m.rotate(angle,x,y,z);m.translate(-px,-py,-pz);}
+
 }

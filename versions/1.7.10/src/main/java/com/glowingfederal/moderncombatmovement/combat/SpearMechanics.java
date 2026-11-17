@@ -19,7 +19,7 @@ public final class SpearMechanics {
  public static boolean use(ItemStack stack,EntityPlayer p){
   if(!ModernEquipment.enabled(p)||ModernEquipment.spear(stack)==null)return false;
   PlayerState state=PlayerHooks.state(p);state.spearContacts.clear();state.kineticStack=stack;
-  p.setItemInUse(stack,72000);return true;
+  p.setItemInUse(stack,72000);com.glowingfederal.moderncombatmovement.compat.ItemSounds.play(p,ModernEquipment.spear(stack)==SpearSpec.WOODEN?"item.spear_wood.use":"item.spear.use",1,1);return true;
  }
  public static void clearInactive(EntityPlayer p){
   if(!ModernEquipment.spearUsing(p)){PlayerState s=PlayerHooks.state(p);s.spearContacts.clear();s.kineticStack=null;}
@@ -32,13 +32,15 @@ public final class SpearMechanics {
   for(Iterator<Map.Entry<UUID,Long>> it=state.spearContacts.entrySet().iterator();it.hasNext();)if(now-it.next().getValue()>=10)it.remove();
   net.minecraft.util.Vec3 look=p.getLookVec();double speed=projection(p,look)*20;
   double base=p.getEntityAttribute(SharedMonsterAttributes.attackDamage).getBaseValue();
+  boolean contact=false;
   for(Entity target:targets(p,look)){
    Long previous=state.spearContacts.get(target.getUniqueID());if(previous!=null&&now-previous<10)continue;
    state.spearContacts.put(target.getUniqueID(),now);
    double relative=Math.max(0,speed-projection(target,look)*20);
    boolean dismount=spec.dismount(elapsed,speed),knockback=spec.knockback(elapsed,speed),damage=spec.damage(elapsed,relative);
-   if(dismount||knockback||damage)stab(p,stack,target,spec.chargeDamage(base,relative),damage,knockback,dismount);
+   if(dismount||knockback||damage)contact|=stab(p,stack,target,spec.chargeDamage(base,relative),damage,knockback,dismount);
   }
+  if(contact){state.kineticHitTicks=0;state.lastSent=-1;com.glowingfederal.moderncombatmovement.compat.ItemSounds.play(p,spec==SpearSpec.WOODEN?"item.spear_wood.hit":"item.spear.hit",1,1);}
  }
  public static boolean jab(EntityPlayer p){
   if(p.isUsingItem()||!owned(p)||p.worldObj.isRemote||!p.isEntityAlive())return false;
@@ -47,13 +49,14 @@ public final class SpearMechanics {
   ItemStack stack=CombatHooks.held(p);float base=CombatHooks.attackDamage(p);
   net.minecraft.util.Vec3 look=p.getLookVec();for(Entity target:targets(p,look))stab(p,stack,target,base,true,true,false);
   state.attackTicks=0;
+  com.glowingfederal.moderncombatmovement.compat.ItemSounds.play(p,ModernEquipment.spear(stack)==SpearSpec.WOODEN?"item.spear_wood.attack":"item.spear.attack",1,1);
   lunge(p,stack);p.swingItem();p.addExhaustion(.1F);return true;
  }
  private static void lunge(EntityPlayer p,ItemStack stack){
   int level=EquipmentEnchantments.level(EquipmentEnchantments.lunge,stack);
   if(level<=0||com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying(p)||p.ridingEntity!=null||p.isInWater()||!(p.getFoodStats().getFoodLevel()>6||p.capabilities.allowFlying))return;
   net.minecraft.util.Vec3 look=p.getLookVec();p.addVelocity(look.xCoord*.458F*level,0,look.zCoord*.458F*level);
-  stack.damageItem(1,p);p.addExhaustion(4*level);sync(p);
+  stack.damageItem(1,p);p.addExhaustion(4*level);sync(p);com.glowingfederal.moderncombatmovement.compat.ItemSounds.play(p,"item.spear.lunge_"+Math.min(3,level),1,1);
  }
  private static boolean stab(EntityPlayer p,ItemStack stack,Entity target,float base,boolean hurt,boolean knockback,boolean dismount){
   if(net.minecraftforge.common.MinecraftForge.EVENT_BUS.post(new net.minecraftforge.event.entity.player.AttackEntityEvent(p,target)))return false;

@@ -10,13 +10,13 @@ public final class CrossbowPoses {
  private CrossbowPoses() {}
  public static void apply(ModelBiped model,EntityPlayer p,float age) {
   if(!Settings.kit(p.world.isRemote))return;
-  ItemStack stack=p.getHeldItemMainhand();
+  ItemStack mainStack=p.getHeldItemMainhand(),offStack=p.getHeldItemOffhand(),activeStack=p.getActiveItemStack(),stack=mainStack;
   boolean left=p.getPrimaryHand()==net.minecraft.util.EnumHandSide.LEFT;
-  if(!Crossbows.known(stack)) { stack=p.getHeldItemOffhand();left=!left; }
-
+  if(Crossbows.known(activeStack)){stack=activeStack;if(stack==offStack)left=!left;}
+  else if(!Crossbows.known(stack)||!Crossbows.charged(stack)){stack=offStack;left=!left;}
   if(!Crossbows.known(stack))return;
-  boolean using=p.isHandActive() && p.getActiveItemStack()==stack;
-  if(!using && !Crossbows.charged(stack))return;
+  boolean using=activeStack==stack;
+  if(!using&&!Crossbows.charged(stack))return;
   ModelRenderer main=left?model.bipedLeftArm:model.bipedRightArm,other=left?model.bipedRightArm:model.bipedLeftArm;
   float sign=left?-1:1;
   if(using) {

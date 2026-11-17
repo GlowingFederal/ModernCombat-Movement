@@ -14,6 +14,8 @@ public final class Crystals {
  private Crystals(){}
  public static boolean known(Entity e){return e.getClass()==EntityEnderCrystal.class||e instanceof PlacedCrystal||e.getClass().getName().equals("ganymedes01.etfuturum.entities.EntityPlacedEndCrystal");}
  public static void register(){
+  net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(new CrystalRespawn());
+  net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(RespawnedDragon.class,"respawned_dragon",8,ModernCombatMovement.instance,256,3,true);
   net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(PlacedCrystal.class,"placed_crystal",1,ModernCombatMovement.instance,256,1,false);
   if(!Content.uab){Item item=new CrystalItem().setUnlocalizedName("moderncombatmovement.end_crystal");net.minecraftforge.fml.common.registry.GameRegistry.registerItem(item,"end_crystal");Content.ITEMS.put("end_crystal",item);net.minecraftforge.fml.common.registry.GameRegistry.addRecipe(new ItemStack(item),"GGG","GEG","GTG",'G',Blocks.glass,'E',Items.ender_eye,'T',Items.ghast_tear);}
  }
@@ -28,9 +30,10 @@ public final class Crystals {
    EntityEnderCrystal crystal=new PlacedCrystal(w);
 
    crystal.setLocationAndAngles(x+.5,y+1,z+.5,0,0);
-   w.spawnEntityInWorld(crystal);
+   if(!w.spawnEntityInWorld(crystal))return false;
+   CrystalRespawn.placed(crystal);
 
   }
-  --stack.stackSize;return true;
+  if(!p.capabilities.isCreativeMode)--stack.stackSize;return true;
  }
 }

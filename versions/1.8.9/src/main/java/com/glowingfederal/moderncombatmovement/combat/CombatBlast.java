@@ -19,10 +19,14 @@ public final class CombatBlast extends Explosion {
  private final float radius,windMultiplier;
  private final boolean wind,wet;
  private boolean windCharge;
+ private final boolean terrain;
  private final Entity owner,source;
  private final CombatBlastDamageSource damage;
  private CombatBlast(World level,Entity source,Entity owner,double x,double y,double z,float radius,boolean wind,boolean wet,float multiplier){
-  super(level,source,x,y,z,radius,!wind&&radius==5,true);
+  this(level,source,owner,x,y,z,radius,wind,wet,multiplier,!wind&&radius==5,true);
+ }
+ private CombatBlast(World level,Entity source,Entity owner,double x,double y,double z,float radius,boolean wind,boolean wet,float multiplier,boolean fire,boolean terrain){
+  super(level,source,x,y,z,radius,fire,terrain);this.terrain=terrain;
   this.level=level;this.owner=owner;this.source=source;this.x=x;this.y=y;this.z=z;this.radius=radius;this.wind=wind;this.wet=wet;windMultiplier=multiplier;
 
   damage=new CombatBlastDamageSource(source,owner,x,y,z);
@@ -31,13 +35,15 @@ public final class CombatBlast extends Explosion {
  public static void crystal(World w,Entity source,Entity owner,double x,double y,double z){run(new CombatBlast(w,source,owner,x,y,z,6,false,false,1));}
  public static void charge(World w,Entity owner,double x,double y,double z){CombatBlast blast=new CombatBlast(w,null,owner,x,y,z,1.2F,true,false,1.22F);blast.windCharge=true;run(blast);}
  public static void wind(World w,Entity owner,double x,double y,double z,float radius,float multiplier){run(new CombatBlast(w,null,owner,x,y,z,radius,true,false,multiplier));}
+ public static void ritual(World w,Entity source,double x,double y,double z,float power,boolean terrain){run(new CombatBlast(w,source,null,x,y,z,power,false,false,1,false,terrain));}
  private static void run(CombatBlast blast){
   World w=blast.level;if(w.isRemote||net.minecraftforge.event.ForgeEventFactory.onExplosionStart(w,blast))return;
   blast.doExplosionA();
-  if(blast.wind){blast.triggerBlocks();blast.getAffectedBlockPositions().clear();w.playSoundEffect(blast.x,blast.y,blast.z,"random.explode",.8F,1.5F);}
+  if(blast.wind){blast.triggerBlocks();blast.getAffectedBlockPositions().clear();com.glowingfederal.moderncombatmovement.compat.ItemSounds.at(w,blast.x,blast.y,blast.z,blast.windCharge?"entity.wind_charge.wind_burst":"entity.breeze.wind_burst",1,1);}
   else blast.doExplosionB(false);
+  if(!blast.terrain)blast.getAffectedBlockPositions().clear();
   for(Object object:w.playerEntities){EntityPlayer p=(EntityPlayer)object;if(p instanceof EntityPlayerMP&&p.getDistanceSq(blast.x,blast.y,blast.z)<4096)
-   ((EntityPlayerMP)p).playerNetServerHandler.sendPacket(new net.minecraft.network.play.server.S27PacketExplosion(blast.x,blast.y,blast.z,blast.radius,blast.getAffectedBlockPositions(),(Vec3)blast.getPlayerKnockbackMap().get(p)));
+   {if(blast.wind){Vec3 motion=(Vec3)blast.getPlayerKnockbackMap().get(p);com.glowingfederal.moderncombatmovement.network.Packets.channel.sendTo(new com.glowingfederal.moderncombatmovement.network.Packets.Feedback(p,0,blast.x,blast.y,blast.z,blast.radius,motion==null?0:motion.xCoord,motion==null?0:motion.yCoord,motion==null?0:motion.zCoord),(EntityPlayerMP)p);}else ((EntityPlayerMP)p).playerNetServerHandler.sendPacket(new net.minecraft.network.play.server.S27PacketExplosion(blast.x,blast.y,blast.z,blast.radius,blast.getAffectedBlockPositions(),(Vec3)blast.getPlayerKnockbackMap().get(p))); }
   }
  }
  @Override public void doExplosionA(){

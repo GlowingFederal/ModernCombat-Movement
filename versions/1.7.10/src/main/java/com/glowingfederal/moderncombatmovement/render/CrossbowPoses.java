@@ -10,12 +10,13 @@ public final class CrossbowPoses {
  private CrossbowPoses() {}
  public static void apply(ModelBiped model,EntityPlayer p,float age) {
   if(!Settings.kit(p.worldObj.isRemote))return;
-  ItemStack stack=p.getHeldItem();
+  ItemStack mainStack=p.getHeldItem(),offStack=com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p),activeStack=((com.glowingfederal.moderncombatmovement.combat.PlayerUseAccess)p).mcm$useStack(),stack=mainStack;
   boolean left=false;
-
+  if(Crossbows.known(activeStack)){stack=activeStack;if(stack==offStack)left=!left;}
+  else if(!Crossbows.known(stack)||!Crossbows.charged(stack)){stack=offStack;left=!left;}
   if(!Crossbows.known(stack))return;
-  boolean using=p.getItemInUse()==stack;
-  if(!using && !Crossbows.charged(stack))return;
+  boolean using=activeStack==stack;
+  if(!using&&!Crossbows.charged(stack))return;
   ModelRenderer main=left?model.bipedLeftArm:model.bipedRightArm,other=left?model.bipedRightArm:model.bipedLeftArm;
   float sign=left?-1:1;
   if(using) {

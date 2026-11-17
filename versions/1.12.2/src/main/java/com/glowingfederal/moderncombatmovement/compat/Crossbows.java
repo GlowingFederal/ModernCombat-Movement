@@ -34,12 +34,17 @@ public final class Crossbows {
  }
  public static int level(Enchantment enchantment,ItemStack stack) { return enchantment==null || stack.isEmpty() ? 0 : EnchantmentHelper.getEnchantmentLevel(enchantment,stack); }
  public static int chargeTime(ItemStack stack) { return CrossbowMath.chargeTicks(level(quickCharge,stack)); }
- public static int duration(ItemStack stack) { return chargeTime(stack)+3; }
+ public static int duration(ItemStack stack) { return 72000; }
  public static boolean charged(ItemStack stack) { return !stack.isEmpty() && stack.hasTagCompound() && stack.getTagCompound().getBoolean("Charged"); }
+ public static boolean firework(ItemStack stack){
+  if(!charged(stack))return false;NBTTagCompound tag=stack.getTagCompound();NBTTagList rounds=tag.getTagList("MCMProjectiles",10);
+  NBTTagCompound saved=rounds.tagCount()>0?rounds.getCompoundTagAt(0):tag.getCompoundTag("ChargedProjectile");
+  return saved.getString("id").equals("minecraft:fireworks");
+ }
  private static boolean ammo(ItemStack stack) { if(stack.isEmpty()) return false; String id=CombatHooks.id(stack);return id.equals("minecraft:fireworks") || id.equals("minecraft:arrow") || id.equals("minecraft:tipped_arrow") || id.equals("minecraft:spectral_arrow") || id.equals("etfuturum:tipped_arrow") || id.equals("etfuturum:spectral_arrow"); }
  private static ItemStack ammunition(EntityPlayer p) {
   if(ammo(p.getHeldItemOffhand())) return p.getHeldItemOffhand(); if(ammo(p.getHeldItemMainhand())) return p.getHeldItemMainhand();
-  for(int i=0;i<p.inventory.getSizeInventory();i++) { ItemStack stack=p.inventory.getStackInSlot(i); if(ammo(stack)) return stack; }
+  for(int i=0;i<p.inventory.getSizeInventory();i++) { ItemStack stack=p.inventory.getStackInSlot(i); if(ammo(stack)&&!CombatHooks.id(stack).equals("minecraft:fireworks")) return stack; }
   return ItemStack.EMPTY;
  }
  public static boolean use(ItemStack stack,EntityPlayer p ,net.minecraft.util.EnumHand hand) {
@@ -49,7 +54,10 @@ public final class Crossbows {
   p.setActiveHand(hand); return true;
  }
  public static void tick(ItemStack stack,EntityPlayer p,int remaining) {
-  if(duration(stack)-remaining>=chargeTime(stack)) { load(stack,p); p.stopActiveHand(); }
+  int elapsed=duration(stack)-remaining,time=chargeTime(stack),quick=level(quickCharge,stack);
+  if(elapsed==(int)Math.ceil(time*.2))ItemSounds.play(p,quick>0?"item.crossbow.quick_charge_"+Math.min(3,quick):"item.crossbow.loading_start",.5F,1);
+  if(quick==0&&elapsed==(int)Math.ceil(time*.5))ItemSounds.play(p,"item.crossbow.loading_middle",.5F,1);
+  if(elapsed>=time)load(stack,p);
  }
  public static void release(ItemStack stack,EntityPlayer p,int remaining) { if(duration(stack)-remaining>=chargeTime(stack)) load(stack,p); }
  public static void load(ItemStack stack,EntityPlayer p) {
@@ -60,7 +68,7 @@ public final class Crossbows {
   if(!stack.hasTagCompound()) stack.setTagCompound(new NBTTagCompound());
   NBTTagCompound tag=stack.getTagCompound(); NBTTagList rounds=new NBTTagList(); int count=level(multishot,stack)>0 ? 3 : 1;
   for(int i=0;i<count;i++) rounds.appendTag(saved.writeToNBT(new NBTTagCompound()));
-  tag.setTag("MCMProjectiles",rounds);tag.setBoolean("Charged",true);tag.setBoolean("CreativeCharge",p.capabilities.isCreativeMode);p.inventory.markDirty();
+  ItemSounds.play(p,"item.crossbow.loading_end",1,1/(p.getRNG().nextFloat()*.5F+1)+.2F);tag.setTag("MCMProjectiles",rounds);tag.setBoolean("Charged",true);tag.setBoolean("CreativeCharge",p.capabilities.isCreativeMode);p.inventory.markDirty();
  }
  public static void fire(ItemStack stack,EntityPlayer p) {
   if(p.world.isRemote || !charged(stack)) return;
@@ -71,12 +79,14 @@ public final class Crossbows {
   int limit=Math.min(3,rounds.tagCount());
   for(int i=0;i<limit;i++) {
    ItemStack ammunition=new ItemStack(rounds.getCompoundTagAt(i)); if(!ammo(ammunition)) continue;
+   ItemSounds.play(p,"item.crossbow.shoot",1,i==0?1:1/(p.getRNG().nextFloat()*.5F+1.8F)+(i==1?.63F:.43F));
    double[] direction=CrossbowMath.direction(p.rotationYaw,p.rotationPitch,i==0 ? 0 : i==1 ? -10 : 10);
    if(CombatHooks.id(ammunition).equals("minecraft:fireworks")){if(p.world.spawnEntity(BoostRocket.crossbow(p.world,p,ammunition,direction)))stack.damageItem(3,p);continue;}
    CrossbowBolt bolt=new CrossbowBolt(p.world,p,ammunition,level(piercing,stack),i>0 || tag.getBoolean("CreativeCharge"));
    bolt.launch(direction[0],direction[1],direction[2]);
-   p.world.spawnEntity(bolt);stack.damageItem(1,p);
+   if(p.world.spawnEntity(bolt))stack.damageItem(1,p);
   }
+  p.addStat(net.minecraft.stats.StatList.getObjectUseStats(stack.getItem()));
   p.inventory.markDirty();
  }
  private static final class CrossbowEnchant extends Enchantment {

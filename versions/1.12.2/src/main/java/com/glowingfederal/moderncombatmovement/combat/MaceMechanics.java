@@ -29,8 +29,9 @@ public final class MaceMechanics {
   }
   int wind=EquipmentEnchantments.level(EquipmentEnchantments.windBurst,CombatHooks.held(p));
   if(wind>0)CombatBlast.wind(p.world,p,p.posX,p.posY,p.posZ,3.5F,(float)WeaponMath.windBurstMultiplier(wind));
+  if(victim.onGround)com.glowingfederal.moderncombatmovement.network.Packets.effect(p.world,1,victim.posX,victim.posY,victim.posZ,3.5F);
   p.fallDistance=0;SpearMechanics.sync(p);
-  p.world.playSound(null,p.posX,p.posY,p.posZ,net.minecraft.init.SoundEvents.ENTITY_IRONGOLEM_ATTACK,net.minecraft.util.SoundCategory.PLAYERS,1,1);
+  com.glowingfederal.moderncombatmovement.compat.ItemSounds.play(p,victim.onGround?(fall>5?"item.mace.smash_ground_heavy":"item.mace.smash_ground"):"item.mace.smash_air",1,1);
  }
  public static void init(){net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new Events());}
  public static final class Events {

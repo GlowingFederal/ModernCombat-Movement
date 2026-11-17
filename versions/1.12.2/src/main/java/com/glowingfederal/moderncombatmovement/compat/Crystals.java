@@ -28,9 +28,9 @@ public final class Crystals {
    EntityEnderCrystal crystal=new EntityEnderCrystal(w,x+.5,y+1,z+.5);
 
    crystal.setLocationAndAngles(x+.5,y+1,z+.5,0,0);crystal.setShowBottom(false);
-   w.spawnEntity(crystal);
+   if(!w.spawnEntity(crystal))return false;
    if(w.provider instanceof WorldProviderEnd){net.minecraft.world.end.DragonFightManager fight=((WorldProviderEnd)w.provider).getDragonFightManager();if(fight!=null)fight.respawnDragon();}
   }
-  stack.shrink(1);return true;
+  if(!p.capabilities.isCreativeMode)stack.shrink(1);return true;
  }
 }

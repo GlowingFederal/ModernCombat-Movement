@@ -6,7 +6,7 @@ This is a specification and migration matrix, not a declaration of completed gam
 
 ## Evidence and reproducibility
 
-The source investigation uses Mojang's official version manifest, official mappings, and decompiled vanilla implementations. No Combatives source was used. No vanilla source files or complete game archives are redistributed in this repository.
+The source investigation uses Mojang's official version manifest, official mappings, and decompiled vanilla implementations. The later animation pass also inspects Combatives' actual legacy swimming, crawl, geometry and rendering code; the adapted crawl component retains its original license and attribution. Better Sprinting's version-specific source supplies the input and flight-boost comparison. No complete vanilla source files or game archives are redistributed in this repository.
 
 - Official manifests: <https://piston-meta.mojang.com/mc/game/version_manifest_v2.json>.
 - 1.21.11 client SHA-1: `ba2df812c2d12e0219c489c4cd9a5e1f0760f5bd`; mappings SHA-1: `031a68bebf55d824f66d6573d8c752f0e1bf232a`. Source inspection used the cached NeoForm **vanilla decompile** output, not NeoForge's patched sources, for the behavioral specification.
@@ -74,6 +74,10 @@ Method references below use Mojang names for modern code and MCP names for legac
 | Bows/crossbows/tridents | Native bow callbacks vs modern projectile, charging, multishot/piercing, loyalty/channeling/riptide behaviors | Adapt / Integration | Adapt / Backport | Adapt / Backport | Only explicit vanilla or opted-in item/projectile sources. Unknown modded projectiles are not rewritten based on their shooter. |
 
 ## Offhand, interactions and animations
+
+The selected 26.3 `BlockTransformer.playerHasBlockingItemUseIntent` rule yields a main-hand tool transformation when the offhand item blocks attacks and secondary use is inactive. MCM applies this to native hoe/shovel callbacks where those actions exist and to the exact UAB tool handlers. Legacy shield reduction uses the inspected `BlocksAttacks` five-tick delay and horizontal 90-degree cone; native damage bookkeeping remains separate from the blocking decision. Riptide's 20-tick contact attack follows modern `LivingEntity.checkAutoSpinAttack`, retaining the launching weapon. These are source-derived rules; runtime evidence is recorded independently in STATUS.md.
+
+Selected 26.3 item components give ender pearls a one-second use cooldown and lingering potions a `.25` duration scale. `ThrownLingeringPotion` creates a radius-three cloud with a ten-tick wait, 600-tick duration, `-.5` radius per affected victim and `-3/600` radius per active tick; entity impacts use the hit entity's feet. `AreaEffectCloud` scans every five ticks and permits reapplication after twenty ticks, with `.5` instantaneous-effect strength. These settings apply consistently to base and custom potion effects. Source correspondence is separate from the bounded production callback and framebuffer evidence in STATUS.md.
 
 | Mechanic | Modern owner / expected behavior | 1.12.2 | 1.8.9 | 1.7.10 | Required changes, risks and verification |
 |---|---|---|---|---|---|

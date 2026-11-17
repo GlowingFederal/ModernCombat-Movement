@@ -12,6 +12,9 @@
     "SpearUabMixin",
     "SpearLungeUabMixin",
     "TridentUabMixin",
-    "WindChargeUabMixin"
+    "WindChargeUabMixin",
+    "ToolUabMixin",
+    "ProjectileEnchantUabMixin",
+    "TridentEntityUabMixin"
   ]
 }

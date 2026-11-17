@@ -14,8 +14,9 @@ public final class CombatHooks {
  private CombatHooks() {}
  public static ItemStack held(EntityPlayer p) { return p.getHeldItemMainhand(); }
  public static String id(ItemStack stack) { if(stack.isEmpty()) return "minecraft:air"; Object id=Item.REGISTRY.getNameForObject(stack.getItem()); return id==null ? "" : id.toString(); }
- public static ItemProperties profile(EntityPlayer p) { return CombatApi.find(id(held(p))); }
+ public static ItemProperties profile(EntityPlayer p) { PlayerState s=PlayerHooks.state(p);return CombatApi.find(id(s.spinAttacking?(ItemStack)s.spinWeapon:held(p))); }
  public static boolean managed(DamageSource source) {
+  if(source!=null&&source.getImmediateSource() instanceof com.glowingfederal.moderncombatmovement.compat.TridentProjectile)return true;
   // Indirect/custom projectiles are excluded even if their shooter holds a supported sword.
   return source!=null && source.getImmediateSource()!=null&&source.getImmediateSource().getClass()==net.minecraft.entity.item.EntityFireworkRocket.class||source!=null && source.getImmediateSource() instanceof com.glowingfederal.moderncombatmovement.compat.CrossbowBolt || source!=null && source.getImmediateSource()==source.getTrueSource() && source.getTrueSource() instanceof EntityPlayer && profile((EntityPlayer)source.getTrueSource())!=null;
  }

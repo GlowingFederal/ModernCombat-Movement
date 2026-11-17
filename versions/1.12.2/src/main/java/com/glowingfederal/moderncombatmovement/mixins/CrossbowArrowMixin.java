@@ -29,4 +29,6 @@ public abstract class CrossbowArrowMixin {
  }
 
  @ModifyConstant(method={"onUpdate","func_70071_h_"},constant=@Constant(floatValue=.8F),require=0) private float mcm$waterDrag(float nativeValue) { return (Object)this instanceof CrossbowBolt ? .6F : nativeValue; }
+ @Inject(method={"onHit","func_184549_a"},at=@At("HEAD"))private void mcm$block(net.minecraft.util.math.RayTraceResult hit,org.spongepowered.asm.mixin.injection.callback.CallbackInfo ci){if((Object)this instanceof CrossbowBolt&&hit.typeOfHit==net.minecraft.util.math.RayTraceResult.Type.BLOCK){EntityArrow arrow=(EntityArrow)(Object)this;com.glowingfederal.moderncombatmovement.compat.ProjectileBlocks.hit(arrow.world,arrow.shootingEntity,hit.getBlockPos().getX(),hit.getBlockPos().getY(),hit.getBlockPos().getZ());}}
+
 }

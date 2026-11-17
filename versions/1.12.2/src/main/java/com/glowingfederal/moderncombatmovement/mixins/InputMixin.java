@@ -11,8 +11,9 @@ import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.config.Settings;
 @Mixin(value=MovementInputFromOptions.class,remap=false)
 public abstract class InputMixin {
+ @Inject(method={"updatePlayerMoveState","func_78898_a"},at=@At("HEAD"))private void mcm$controls(CallbackInfo ci){com.glowingfederal.moderncombatmovement.render.ClientControls.poll();}
  @Inject(method={"updatePlayerMoveState","func_78898_a"},at=@At("RETURN")) private void mcm$input(CallbackInfo ci) {
-  EntityPlayer p=Minecraft.getMinecraft().player; if(p==null || !Settings.movement(true)) return;
+  EntityPlayer p=Minecraft.getMinecraft().player; if(p==null || !Settings.movement(true)||com.glowingfederal.moderncombatmovement.compat.MovementCompat.owns(p)) return;
   MovementInput i=(MovementInput)(Object)this;
   if(i.sneak) { i.moveStrafe/=.3F; i.moveForward/=.3F; }
   // The legacy travel method normalizes above unit length. Keep the modern square-input

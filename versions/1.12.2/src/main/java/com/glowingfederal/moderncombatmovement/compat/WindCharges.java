@@ -18,7 +18,7 @@ public final class WindCharges {
   WindChargeProjectile projectile=new WindChargeProjectile(p.world,p);projectile.launch(p);
   if(!p.world.spawnEntity(projectile))return false;
   p.getCooldownTracker().setCooldown(stack.getItem(),10); if(!p.capabilities.isCreativeMode)stack.shrink(1);
-  p.world.playSound(null,p.posX,p.posY,p.posZ,net.minecraft.init.SoundEvents.ENTITY_SNOWBALL_THROW,net.minecraft.util.SoundCategory.PLAYERS,.5F,.4F/(p.getRNG().nextFloat()*.4F+.8F)); return true;
+  ItemSounds.play(p,"entity.wind_charge.throw",.5F,.4F/(p.getRNG().nextFloat()*.4F+.8F)); return true;
  }
  public static void tick(EntityPlayer p){if(PlayerHooks.state(p).windCooldown>0)PlayerHooks.state(p).windCooldown--;if((p.onGround&&p.motionY<=0)||p.isInWater()||p.isOnLadder()||p.capabilities.isFlying)clear(p);}
  private static void clear(EntityLivingBase e){e.getEntityData().removeTag("MCMWindLaunchY");}

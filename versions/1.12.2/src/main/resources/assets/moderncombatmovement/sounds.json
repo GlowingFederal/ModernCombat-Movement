@@ -1,0 +1,933 @@
+{
+  "entity.breeze.wind_burst": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:mob/breeze/wind_burst1",
+        "pitch": 1.2
+      },
+      {
+        "name": "moderncombatmovement:mob/breeze/wind_burst2",
+        "pitch": 1.2
+      },
+      {
+        "name": "moderncombatmovement:mob/breeze/wind_burst3",
+        "pitch": 1.2
+      }
+    ],
+    "subtitle": "subtitles.entity.breeze.wind_burst"
+  },
+  "entity.player.teleport": {
+    "sounds": [
+      "moderncombatmovement:mob/endermen/portal",
+      "moderncombatmovement:mob/endermen/portal2"
+    ],
+    "subtitle": "subtitles.entity.player.teleport"
+  },
+  "entity.wind_charge.wind_burst": {
+    "sounds": [
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:entity/wind_charge/wind_burst1",
+        "pitch": 1.25
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:entity/wind_charge/wind_burst2",
+        "pitch": 1.25
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:entity/wind_charge/wind_burst3",
+        "pitch": 1.25
+      }
+    ],
+    "subtitle": "subtitles.entity.wind_charge.wind_burst"
+  },
+  "item.crossbow.hit": {
+    "sounds": [
+      "moderncombatmovement:random/bowhit1",
+      "moderncombatmovement:random/bowhit2",
+      "moderncombatmovement:random/bowhit3",
+      "moderncombatmovement:random/bowhit4"
+    ],
+    "subtitle": "subtitles.item.crossbow.hit"
+  },
+  "item.crossbow.loading_end": {
+    "sounds": [
+      "moderncombatmovement:item/crossbow/loading_end"
+    ],
+    "subtitle": "subtitles.item.crossbow.load"
+  },
+  "item.crossbow.loading_middle": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle1",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle1",
+        "pitch": 0.95,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle1",
+        "pitch": 1.2,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle2",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle2",
+        "pitch": 0.9,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle2",
+        "pitch": 1.05,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle3",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle3",
+        "pitch": 0.9,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle3",
+        "pitch": 1.05,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_middle4",
+        "volume": 0.65
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.charge"
+  },
+  "item.crossbow.loading_start": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/loading_start",
+        "volume": 0.3
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.charge"
+  },
+  "item.crossbow.quick_charge_1": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick1_1",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick1_1",
+        "pitch": 0.9,
+        "volume": 0.5
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick1_2",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick1_2",
+        "pitch": 0.95,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick1_3",
+        "volume": 0.65
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.charge"
+  },
+  "item.crossbow.quick_charge_2": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_1",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_1",
+        "pitch": 0.95,
+        "volume": 0.5
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_2",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_2",
+        "pitch": 0.95,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_2",
+        "pitch": 1.05,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_3",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_3",
+        "pitch": 0.9,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick2_3",
+        "pitch": 1.05,
+        "volume": 0.65
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.charge"
+  },
+  "item.crossbow.quick_charge_3": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_1",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_1",
+        "pitch": 0.95,
+        "volume": 0.5
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_2",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_2",
+        "pitch": 0.95,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_2",
+        "pitch": 1.05,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_3",
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_3",
+        "pitch": 0.9,
+        "volume": 0.65
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/quick_charge/quick3_3",
+        "pitch": 1.05,
+        "volume": 0.65
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.charge"
+  },
+  "item.crossbow.shoot": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot1",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot1",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot1",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot2",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot2",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot2",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot3",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot3",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/crossbow/shoot3",
+        "pitch": 0.9,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.item.crossbow.shoot"
+  },
+  "item.mace.smash_air": {
+    "sounds": [
+      "moderncombatmovement:item/mace/smash_air1",
+      "moderncombatmovement:item/mace/smash_air2",
+      "moderncombatmovement:item/mace/smash_air3"
+    ],
+    "subtitle": "subtitles.item.mace.smash_air"
+  },
+  "item.mace.smash_ground": {
+    "sounds": [
+      "moderncombatmovement:item/mace/smash_ground1",
+      "moderncombatmovement:item/mace/smash_ground2",
+      "moderncombatmovement:item/mace/smash_ground3",
+      "moderncombatmovement:item/mace/smash_ground4"
+    ],
+    "subtitle": "subtitles.item.mace.smash_ground"
+  },
+  "item.mace.smash_ground_heavy": {
+    "sounds": [
+      "moderncombatmovement:item/mace/smash_ground_heavy"
+    ],
+    "subtitle": "subtitles.item.mace.smash_ground"
+  },
+  "item.shield.block": {
+    "sounds": [
+      "moderncombatmovement:item/shield/block1",
+      "moderncombatmovement:item/shield/block2",
+      "moderncombatmovement:item/shield/block3",
+      "moderncombatmovement:item/shield/block4",
+      "moderncombatmovement:item/shield/block5"
+    ],
+    "subtitle": "subtitles.item.shield.block"
+  },
+  "item.shield.break": {
+    "sounds": [
+      "moderncombatmovement:random/break"
+    ],
+    "subtitle": "subtitles.entity.item.break"
+  },
+  "item.spear.attack": {
+    "sounds": [
+      "moderncombatmovement:item/spear/attack1",
+      "moderncombatmovement:item/spear/attack2",
+      "moderncombatmovement:item/spear/attack3"
+    ],
+    "subtitle": "subtitles.item.spear.attack"
+  },
+  "item.spear.hit": {
+    "sounds": [
+      "moderncombatmovement:item/spear/hit1",
+      "moderncombatmovement:item/spear/hit2",
+      "moderncombatmovement:item/spear/hit3"
+    ],
+    "subtitle": "subtitles.item.spear.hit"
+  },
+  "item.spear.lunge_1": {
+    "sounds": [
+      "moderncombatmovement:item/spear/lunge1"
+    ],
+    "subtitle": "subtitles.item.spear.lunge"
+  },
+  "item.spear.lunge_2": {
+    "sounds": [
+      "moderncombatmovement:item/spear/lunge2"
+    ],
+    "subtitle": "subtitles.item.spear.lunge"
+  },
+  "item.spear.lunge_3": {
+    "sounds": [
+      "moderncombatmovement:item/spear/lunge3"
+    ],
+    "subtitle": "subtitles.item.spear.lunge"
+  },
+  "item.spear.use": {
+    "sounds": [
+      "moderncombatmovement:item/spear/use"
+    ],
+    "subtitle": "subtitles.item.spear.use"
+  },
+  "item.trident.hit": {
+    "sounds": [
+      "moderncombatmovement:item/trident/pierce1",
+      "moderncombatmovement:item/trident/pierce2",
+      "moderncombatmovement:item/trident/pierce3"
+    ],
+    "subtitle": "subtitles.item.trident.hit"
+  },
+  "item.trident.hit_ground": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/trident/ground_impact1",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/trident/ground_impact2",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/trident/ground_impact3",
+        "volume": 0.9
+      },
+      {
+        "name": "moderncombatmovement:item/trident/ground_impact4",
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.item.trident.hit_ground"
+  },
+  "item.trident.return": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/trident/return1",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return2",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return2",
+        "pitch": 0.8,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return2",
+        "pitch": 1.2,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return2",
+        "pitch": 1.2,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return3",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return3",
+        "pitch": 0.8,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return3",
+        "pitch": 0.8,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/trident/return3",
+        "pitch": 1.2,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.item.trident.return"
+  },
+  "item.trident.riptide_1": {
+    "sounds": [
+      "moderncombatmovement:item/trident/riptide1"
+    ],
+    "subtitle": "subtitles.item.trident.riptide"
+  },
+  "item.trident.riptide_2": {
+    "sounds": [
+      "moderncombatmovement:item/trident/riptide2"
+    ],
+    "subtitle": "subtitles.item.trident.riptide"
+  },
+  "item.trident.riptide_3": {
+    "sounds": [
+      "moderncombatmovement:item/trident/riptide3"
+    ],
+    "subtitle": "subtitles.item.trident.riptide"
+  },
+  "item.trident.throw": {
+    "sounds": [
+      "moderncombatmovement:item/trident/throw1",
+      "moderncombatmovement:item/trident/throw2"
+    ],
+    "subtitle": "subtitles.item.trident.throw"
+  },
+  "item.trident.thunder": {
+    "sounds": [
+      "moderncombatmovement:item/trident/thunder1",
+      "moderncombatmovement:item/trident/thunder2"
+    ],
+    "subtitle": "subtitles.item.trident.thunder"
+  },
+  "block.candle.extinguish": {
+    "sounds": [
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1"
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1",
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1",
+        "pitch": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1",
+        "pitch": 1.1
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish1",
+        "pitch": 1.1,
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2"
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2",
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2",
+        "pitch": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2",
+        "pitch": 1.1
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish2",
+        "pitch": 1.1,
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3"
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3",
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3",
+        "pitch": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3",
+        "pitch": 0.9,
+        "volume": 0.9
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3",
+        "pitch": 1.1
+      },
+      {
+        "attenuation_distance": 8,
+        "name": "moderncombatmovement:block/candle/extinguish3",
+        "pitch": 1.1,
+        "volume": 0.9
+      }
+    ],
+    "subtitle": "subtitles.block.candle.extinguish"
+  },
+  "entity.player.attack.crit": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/crit1",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/crit2",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/crit3",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.crit"
+  },
+  "entity.player.attack.knockback": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/knockback1",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/knockback2",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/knockback3",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/knockback4",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.knockback"
+  },
+  "entity.player.attack.nodamage": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak1",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak2",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak3",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak4",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.weak"
+  },
+  "entity.player.attack.strong": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong1",
+        "volume": 0.6
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong2",
+        "volume": 0.6
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong3",
+        "volume": 0.6
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong4",
+        "volume": 0.6
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong5",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/strong6",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.strong"
+  },
+  "entity.player.attack.sweep": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep1",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep2",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep3",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep4",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep5",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep6",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/sweep7",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.sweep"
+  },
+  "entity.player.attack.weak": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak1",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak2",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak3",
+        "volume": 0.7
+      },
+      {
+        "name": "moderncombatmovement:entity/player/attack/weak4",
+        "volume": 0.7
+      }
+    ],
+    "subtitle": "subtitles.entity.player.attack.weak"
+  },
+  "entity.player.swim": {
+    "sounds": [
+      "moderncombatmovement:liquid/swim5",
+      "moderncombatmovement:liquid/swim6",
+      "moderncombatmovement:liquid/swim7",
+      "moderncombatmovement:liquid/swim8",
+      "moderncombatmovement:liquid/swim9",
+      "moderncombatmovement:liquid/swim10",
+      "moderncombatmovement:liquid/swim11",
+      "moderncombatmovement:liquid/swim12",
+      "moderncombatmovement:liquid/swim13",
+      "moderncombatmovement:liquid/swim14",
+      "moderncombatmovement:liquid/swim15",
+      "moderncombatmovement:liquid/swim16",
+      "moderncombatmovement:liquid/swim17",
+      "moderncombatmovement:liquid/swim18"
+    ],
+    "subtitle": "subtitles.entity.generic.swim"
+  },
+  "entity.wind_charge.throw": {
+    "sounds": [
+      "moderncombatmovement:random/bow"
+    ],
+    "subtitle": "subtitles.entity.wind_charge.throw"
+  },
+  "item.armor.equip_elytra": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_leather1",
+      "moderncombatmovement:item/armor/equip_leather2",
+      "moderncombatmovement:item/armor/equip_leather3",
+      "moderncombatmovement:item/armor/equip_leather4",
+      "moderncombatmovement:item/armor/equip_leather5",
+      "moderncombatmovement:item/armor/equip_leather6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_elytra"
+  },
+  "item.elytra.flying": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/elytra/elytra_loop",
+        "volume": 0.6
+      }
+    ],
+    "subtitle": "subtitles.item.elytra.flying"
+  },
+  "item.spear_wood.attack": {
+    "sounds": [
+      "moderncombatmovement:item/spear/wood/attack1",
+      "moderncombatmovement:item/spear/wood/attack2",
+      "moderncombatmovement:item/spear/wood/attack3"
+    ],
+    "subtitle": "subtitles.item.spear_wood.attack"
+  },
+  "item.spear_wood.hit": {
+    "sounds": [
+      "moderncombatmovement:item/spear/wood/hit1",
+      "moderncombatmovement:item/spear/wood/hit2",
+      "moderncombatmovement:item/spear/wood/hit3"
+    ],
+    "subtitle": "subtitles.item.spear_wood.hit"
+  },
+  "item.spear_wood.use": {
+    "sounds": [
+      "moderncombatmovement:item/spear/wood/use"
+    ],
+    "subtitle": "subtitles.item.spear_wood.use"
+  },
+  "entity.ender_dragon.growl": {
+    "sounds": [
+      "moderncombatmovement:mob/enderdragon/growl1",
+      "moderncombatmovement:mob/enderdragon/growl2",
+      "moderncombatmovement:mob/enderdragon/growl3",
+      "moderncombatmovement:mob/enderdragon/growl4"
+    ],
+    "subtitle": "subtitles.entity.ender_dragon.growl"
+  },
+  "item.armor.equip_chain": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_chain1",
+      "moderncombatmovement:item/armor/equip_chain2",
+      "moderncombatmovement:item/armor/equip_chain3",
+      "moderncombatmovement:item/armor/equip_chain4",
+      "moderncombatmovement:item/armor/equip_chain5",
+      "moderncombatmovement:item/armor/equip_chain6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_chain"
+  },
+  "item.armor.equip_copper": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_copper1",
+      "moderncombatmovement:item/armor/equip_copper2",
+      "moderncombatmovement:item/armor/equip_copper3",
+      "moderncombatmovement:item/armor/equip_copper4",
+      "moderncombatmovement:item/armor/equip_copper5",
+      "moderncombatmovement:item/armor/equip_copper6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_copper"
+  },
+  "item.armor.equip_diamond": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_diamond1",
+      "moderncombatmovement:item/armor/equip_diamond2",
+      "moderncombatmovement:item/armor/equip_diamond3",
+      "moderncombatmovement:item/armor/equip_diamond4",
+      "moderncombatmovement:item/armor/equip_diamond5",
+      "moderncombatmovement:item/armor/equip_diamond6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_diamond"
+  },
+  "item.armor.equip_generic": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_generic1",
+      "moderncombatmovement:item/armor/equip_generic2",
+      "moderncombatmovement:item/armor/equip_generic3",
+      "moderncombatmovement:item/armor/equip_generic4",
+      "moderncombatmovement:item/armor/equip_generic5",
+      "moderncombatmovement:item/armor/equip_generic6"
+    ],
+    "subtitle": "subtitles.item.armor.equip"
+  },
+  "item.armor.equip_gold": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_gold1",
+      "moderncombatmovement:item/armor/equip_gold2",
+      "moderncombatmovement:item/armor/equip_gold3",
+      "moderncombatmovement:item/armor/equip_gold4",
+      "moderncombatmovement:item/armor/equip_gold5",
+      "moderncombatmovement:item/armor/equip_gold6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_gold"
+  },
+  "item.armor.equip_iron": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_iron1",
+      "moderncombatmovement:item/armor/equip_iron2",
+      "moderncombatmovement:item/armor/equip_iron3",
+      "moderncombatmovement:item/armor/equip_iron4",
+      "moderncombatmovement:item/armor/equip_iron5",
+      "moderncombatmovement:item/armor/equip_iron6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_iron"
+  },
+  "item.armor.equip_leather": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_leather1",
+      "moderncombatmovement:item/armor/equip_leather2",
+      "moderncombatmovement:item/armor/equip_leather3",
+      "moderncombatmovement:item/armor/equip_leather4",
+      "moderncombatmovement:item/armor/equip_leather5",
+      "moderncombatmovement:item/armor/equip_leather6"
+    ],
+    "subtitle": "subtitles.item.armor.equip_leather"
+  },
+  "item.armor.equip_nautilus": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_wolf1",
+      "moderncombatmovement:item/armor/equip_wolf2"
+    ],
+    "subtitle": "subtitles.item.armor.equip_nautilus"
+  },
+  "item.armor.equip_netherite": {
+    "sounds": [
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite1",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite1",
+        "pitch": 0.9,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite2",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite2",
+        "pitch": 0.9,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite3",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite3",
+        "pitch": 0.9,
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite4",
+        "volume": 0.8
+      },
+      {
+        "name": "moderncombatmovement:item/armor/equip_netherite4",
+        "pitch": 0.9,
+        "volume": 0.8
+      }
+    ],
+    "subtitle": "subtitles.item.armor.equip_netherite"
+  },
+  "item.armor.equip_turtle": {
+    "sounds": [
+      "moderncombatmovement:mob/turtle/armor",
+      {
+        "name": "moderncombatmovement:mob/turtle/armor",
+        "pitch": 0.85
+      },
+      {
+        "name": "moderncombatmovement:mob/turtle/armor",
+        "pitch": 1.1
+      }
+    ],
+    "subtitle": "subtitles.item.armor.equip_turtle"
+  },
+  "item.armor.equip_wolf": {
+    "sounds": [
+      "moderncombatmovement:item/armor/equip_wolf1",
+      {
+        "name": "moderncombatmovement:item/armor/equip_wolf1",
+        "pitch": 1.1
+      },
+      "moderncombatmovement:item/armor/equip_wolf2",
+      {
+        "name": "moderncombatmovement:item/armor/equip_wolf2",
+        "pitch": 1.1
+      }
+    ],
+    "subtitle": "subtitles.item.armor.equip_wolf"
+  }
+}

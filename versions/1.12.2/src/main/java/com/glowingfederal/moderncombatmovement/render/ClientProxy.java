@@ -17,8 +17,16 @@ import com.glowingfederal.moderncombatmovement.movement.MovementMath;
 public final class ClientProxy extends CommonProxy {
  private final ConcurrentHashMap<UUID,Packets.Snapshot> pending=new ConcurrentHashMap<UUID,Packets.Snapshot>();
  private volatile boolean disconnected;
+ private final java.util.concurrent.ConcurrentLinkedQueue<Packets.Feedback> feedback=new java.util.concurrent.ConcurrentLinkedQueue<Packets.Feedback>();
+ public void windTrail(net.minecraft.world.World world,double x,double y,double z){Minecraft.getMinecraft().effectRenderer.addEffect(new GustParticle(world,x,y,z,true));}
+ public void feedback(Packets.Feedback packet){if(feedback.size()<1024)feedback.offer(packet);}
  private boolean lastJump;
  public void init() {
+  net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new GustParticle.Textures());
+  ClientOptionsEvents optionsEvents=new ClientOptionsEvents();net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(optionsEvents);net.minecraftforge.fml.common.FMLCommonHandler.instance().bus().register(optionsEvents);
+  net.minecraft.item.Item crossbow=net.minecraftforge.fml.common.registry.ForgeRegistries.ITEMS.getValue(new net.minecraft.util.ResourceLocation(com.glowingfederal.moderncombatmovement.compat.Content.uab?"etfuturum:crossbow":"moderncombatmovement:crossbow"));
+  if(crossbow!=null){crossbow.addPropertyOverride(new net.minecraft.util.ResourceLocation("firework"),(stack,world,entity)->com.glowingfederal.moderncombatmovement.compat.Crossbows.firework(stack)?1:0);net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(crossbow,0,new net.minecraft.client.renderer.block.model.ModelResourceLocation("moderncombatmovement:crossbow","inventory"));}
+
   net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(this);
   net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.BoostRocket.class,manager->new net.minecraft.client.renderer.entity.RenderSnowball(manager,net.minecraft.init.Items.FIREWORKS,net.minecraft.client.Minecraft.getMinecraft().getRenderItem()));
   net.minecraft.item.Item wind=com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge");if(wind!=null)net.minecraftforge.client.model.ModelLoader.setCustomModelResourceLocation(wind,0,new net.minecraft.client.renderer.block.model.ModelResourceLocation("moderncombatmovement:wind_charge","inventory"));net.minecraftforge.fml.client.registry.RenderingRegistry.registerEntityRenderingHandler(com.glowingfederal.moderncombatmovement.compat.WindChargeProjectile.class,manager->new net.minecraft.client.renderer.entity.RenderSnowball(manager,com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge")!=null?com.glowingfederal.moderncombatmovement.compat.Content.ITEMS.get("wind_charge"):net.minecraft.init.Items.SNOWBALL,net.minecraft.client.Minecraft.getMinecraft().getRenderItem()));
@@ -43,15 +51,22 @@ public final class ClientProxy extends CommonProxy {
  @SubscribeEvent public void tick(TickEvent.ClientTickEvent e) {
   if(e.phase!=TickEvent.Phase.START) return;
   Minecraft mc=Minecraft.getMinecraft();
-  if(disconnected || mc.world==null) { pending.clear(); Settings.resetRemote(); disconnected=false; return; }
+  if(disconnected || mc.world==null) { ClientControls.reset();lastJump=false;feedback.clear();pending.clear(); Settings.resetRemote(); disconnected=false; return; }
+  ClientControls.tick();
+  if(mc.player!=null)ClientUseStates.released(mc.player);
+  for(int count=0;count<128;count++){Packets.Feedback event=feedback.poll();if(event==null)break;if(mc.player!=null&&event.dimension==mc.player.dimension&&event.recipient.equals(mc.player.getUniqueID()))CombatFeedback.apply(event);}
   for(Packets.Snapshot packet : pending.values()) {
    if(packet.dimension!=mc.world.provider.getDimension()) { pending.remove(packet.uuid,packet); continue; }
    Entity entity=mc.world.getEntityByID(packet.id);
    if(!(entity instanceof EntityPlayer) || !entity.getUniqueID().equals(packet.uuid)) continue;
    EntityPlayer p=(EntityPlayer)entity;
+   if(!com.glowingfederal.moderncombatmovement.network.RegistryAgreement.signature().equals(packet.registry)){
+    pending.clear();mc.getConnection().getNetworkManager().closeChannel(new net.minecraft.util.text.TextComponentString("Modern Combat & Movement: client/server enchantment or effect IDs differ. Match the installed UAB version and MCM Compatibility ID settings. Server: "+packet.registry+" Client: "+com.glowingfederal.moderncombatmovement.network.RegistryAgreement.signature()));return;
+   }
    Settings.acceptPolicy(packet.policy);
-   PlayerState s=PlayerHooks.state(p); s.pose=packet.pose; s.swimming=packet.swimming;
-   if(PlayerHooks.active(p)) PlayerHooks.dimensions(p);
+   com.glowingfederal.moderncombatmovement.config.ClientOptions.serverFlightLimit=packet.flightLimit;
+   PlayerState s=PlayerHooks.state(p); s.kineticHitTicks=packet.kineticHitTicks;s.pose=packet.pose; s.swimming=packet.swimming;s.spinTicks=packet.spinTicks;
+   if(PlayerHooks.active(p)||packet.spinTicks>0) PlayerHooks.dimensions(p);
    pending.remove(packet.uuid,packet);
   }
  }
@@ -59,6 +74,9 @@ public final class ClientProxy extends CommonProxy {
   EntityPlayerSP p=(EntityPlayerSP)player; Minecraft mc=Minecraft.getMinecraft(); PlayerState s=PlayerHooks.state(p);
   if(!Settings.movement(true)) return;
   boolean jumpNow=p.movementInput.jump;if(jumpNow&&!s.flightJump&&com.glowingfederal.moderncombatmovement.movement.FlightHooks.start(p))Packets.channel.sendToServer(new Packets.Flight());s.flightJump=jumpNow;
+  s.jump=p.movementInput.jump;
+  if(lastJump!=s.jump || p.ticksExisted%20==0) { Packets.channel.sendToServer(new Packets.Intent(s.jump)); lastJump=s.jump; }
+  if(com.glowingfederal.moderncombatmovement.compat.MovementCompat.owns(p)||ClientControls.external())return;
   boolean forward=p.movementInput.moveForward>1.0E-5F;
   boolean eyes=p.isInsideOfMaterial(net.minecraft.block.material.Material.WATER);
   boolean using=p.isHandActive() && !com.glowingfederal.moderncombatmovement.compat.ModernEquipment.spearUsing(p);
@@ -81,6 +99,6 @@ public final class ClientProxy extends CommonProxy {
   s.wasForward=forward; s.sprinting=running; p.setSprinting(running);
   s.jump=p.movementInput.jump;
   if(p.isInWater() && p.movementInput.sneak && !p.capabilities.isFlying) p.motionY-=.04F;
-  if(lastJump!=s.jump || p.ticksExisted%20==0) { Packets.channel.sendToServer(new Packets.Intent(s.jump)); lastJump=s.jump; }
+  
  }
 }

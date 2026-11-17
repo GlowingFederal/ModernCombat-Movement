@@ -5,11 +5,13 @@ import net.minecraftforge.common.config.Configuration;
 public final class Settings {
  public static final int MOVEMENT=1, SWIMMING=2, CRAWLING=4, KNOCKBACK=8, COMBAT=16, KIT=32, FLIGHT=64, SHIELDS=128, PROJECTILES=256, OFFHAND=512;
  public static int localPolicy=7;
+ public static Configuration configuration;
+ public static float creativeFlightLimit=5;
  public static boolean rendering=true, debug=false, fallbackEquipment=true;
  private static volatile int remotePolicy=1023;
  private Settings() {}
  public static void load(File file) {
-  Configuration c=new Configuration(file); c.load();
+  Configuration c=new Configuration(file); c.load();configuration=c;ClientOptions.load(c);creativeFlightLimit=(float)c.get("Flight","maximumCreativeFlightMultiplier",5D,"Server limit for the optional additional creative sprint flight multiplier. 1 disables additional boosting. Restart the server after editing.",1D,5D).getDouble();if(!Float.isFinite(creativeFlightLimit))creativeFlightLimit=1;creativeFlightLimit=Math.max(1,Math.min(5,creativeFlightLimit));
   migrate(c,"General","modernKitItems","Equipment");
   migrate(c,"Compatibility","standaloneEquipment","Equipment");
   migrate(c,"Movement","elytraFlight","Flight");
@@ -48,5 +50,5 @@ public final class Settings {
  public static boolean combat(boolean client) { return ((client ? remotePolicy : localPolicy)&COMBAT)!=0; }
  public static boolean knockback(boolean client) { return ((client ? remotePolicy : localPolicy)&KNOCKBACK)!=0; }
  public static void acceptPolicy(int flags) { remotePolicy=flags&1023; }
- public static void resetRemote() { remotePolicy=1023; }
+ public static void resetRemote() { remotePolicy=1023;ClientOptions.serverFlightLimit=1; }
 }

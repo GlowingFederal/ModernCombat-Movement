@@ -1,51 +1,91 @@
+/* Adapted from UAB RespawnAnchors; LGPL-3.0. */
 package com.glowingfederal.moderncombatmovement.compat;
 
+import java.util.Objects;
+import net.minecraft.block.Block;
+import net.minecraft.block.material.Material;
 import net.minecraft.entity.player.*;
 import net.minecraft.nbt.NBTTagCompound;
+import net.minecraft.server.MinecraftServer;
+import net.minecraftforge.common.util.ForgeDirection;
+import net.minecraft.util.*;
 import net.minecraft.world.*;
-import net.minecraft.entity.Entity;
-import cpw.mods.fml.common.eventhandler.*;
-import cpw.mods.fml.common.gameevent.PlayerEvent;
-import net.minecraftforge.event.entity.living.LivingDeathEvent;
 import net.minecraftforge.common.DimensionManager;
+import cpw.mods.fml.common.FMLCommonHandler;
+
+/** Persisted player binding, scoped strictly to native death-respawn execution. */
 public final class AnchorRespawn {
- private AnchorRespawn() {}
- public static void init() { AnchorRespawn events=new AnchorRespawn(); cpw.mods.fml.common.FMLCommonHandler.instance().bus().register(events); net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(events); }
- public static NBTTagCompound saved(EntityPlayer p) { return p.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getCompoundTag("MCMAnchor"); }
- public static void clearForBed(EntityPlayer p) {
-  NBTTagCompound tag=saved(p);
-  if(!tag.getBoolean("respawning")) p.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).removeTag("MCMAnchor");
- }
- @SubscribeEvent(priority=EventPriority.LOWEST) public void death(LivingDeathEvent e) {
-  if(e.entityLiving instanceof EntityPlayer && !e.entityLiving.worldObj.isRemote && !e.isCanceled()) { NBTTagCompound tag=saved((EntityPlayer)e.entityLiving); if(tag.hasKey("dimension")) tag.setBoolean("respawning",true); }
- }
- @SubscribeEvent public void respawn(PlayerEvent.PlayerRespawnEvent e) {
-  if(!com.glowingfederal.moderncombatmovement.config.Settings.kit(false) || !(e.player instanceof EntityPlayerMP)) return;
-  final EntityPlayerMP p=(EntityPlayerMP)e.player; NBTTagCompound tag=saved(p);
-  if(!tag.getBoolean("respawning")) return;
-  tag.setBoolean("respawning",false);
-  int dimension=tag.getInteger("dimension");
-  if(!DimensionManager.isDimensionRegistered(dimension)) return;
-  WorldServer w=DimensionManager.getWorld(dimension); if(w==null) { DimensionManager.initDimension(dimension); w=DimensionManager.getWorld(dimension); }
-  if(w==null) return;
-  int x=tag.getInteger("x"),y=tag.getInteger("y"),z=tag.getInteger("z");
-  net.minecraft.block.Block block=w.getBlock(x,y,z);
-  if(block!=Anchors.standalone) return;
-  int charges=w.getBlockMetadata(x,y,z); if(charges<=0) return;
-  int[] exit=null;
-  for(int dy:new int[]{0,1,-1}) for(int[] d:new int[][]{{0,-1},{-1,0},{1,0},{0,1},{-1,-1},{1,-1},{-1,1},{1,1}}) {
-   int ex=x+d[0],ey=y+dy,ez=z+d[1];
-   if(exit==null && w.isAirBlock(ex,ey,ez) && w.isAirBlock(ex,ey+1,ez) && w.isSideSolid(ex,ey-1,ez,net.minecraftforge.common.util.ForgeDirection.UP)) exit=new int[]{ex,ey,ez};
-  }
-  if(exit==null) return;
-  final double ex=exit[0]+.5,ey=exit[1],ez=exit[2]+.5;
-  if(p.dimension!=dimension) {
-   final WorldServer destination=w;
-   cpw.mods.fml.common.FMLCommonHandler.instance().getMinecraftServerInstance().getConfigurationManager().transferPlayerToDimension(p,dimension,new Teleporter(destination) {
-    @Override public void placeInPortal(Entity entity,double px,double py,double pz,float yaw) { entity.setPosition(ex,ey,ez); }
-   });
-  }
-  p.playerNetServerHandler.setPlayerLocation(ex,ey,ez,p.rotationYaw,p.rotationPitch);
-  w.setBlockMetadataWithNotify(x,y,z,charges-1,3);
- }
+    private static final String KEY="MCMAnchor";
+    private static final ThreadLocal<Context> RESPAWN=new ThreadLocal<>();
+    private static final ThreadLocal<Binding> BINDING=new ThreadLocal<>();
+    private static final ThreadLocal<SpawnRestore> RESTORING=new ThreadLocal<>();
+    private AnchorRespawn(){}
+    public static NBTTagCompound saved(EntityPlayer player){return player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).getCompoundTag(KEY);}
+    private static void save(EntityPlayer player,NBTTagCompound binding){NBTTagCompound root=player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG);root.setTag(KEY,binding.copy());player.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG,root);}
+    private static void clear(EntityPlayer player){player.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG).removeTag(KEY);}
+    private static boolean valid(NBTTagCompound tag){return tag.hasKey("dimension",3)&&tag.hasKey("x",3)&&tag.hasKey("y",3)&&tag.hasKey("z",3)&&Math.abs((long)tag.getInteger("x"))<30000000&&Math.abs((long)tag.getInteger("z"))<30000000&&tag.getInteger("y")>=0&&tag.getInteger("y")<256;}
+    private static ChunkCoordinates point(NBTTagCompound tag){return new ChunkCoordinates(tag.getInteger("x"),tag.getInteger("y"),tag.getInteger("z"));}
+    private static boolean matches(NBTTagCompound tag,int dimension,ChunkCoordinates pos){return valid(tag)&&tag.getInteger("dimension")==dimension&&point(tag).equals(pos);}
+    private static final class Binding {final EntityPlayer player;Binding(EntityPlayer player){this.player=player;}}
+    public static boolean bind(EntityPlayer player,World world,ChunkCoordinates pos){
+        if(!com.glowingfederal.moderncombatmovement.config.Settings.kit(false)||world.isRemote||player.worldObj!=world||!world.provider.isHellWorld)return false;
+        int dimension=world.provider.dimensionId;if(matches(saved(player),dimension,pos)&&pos.equals(player.getBedLocation(dimension))&&player.isSpawnForced(dimension))return true;
+        Binding attempt=new Binding(player),previous=BINDING.get();BINDING.set(attempt);
+        try{player.setSpawnChunk(pos,true);}finally{if(previous==null)BINDING.remove();else BINDING.set(previous);}
+        if(!pos.equals(player.getBedLocation(dimension))||!player.isSpawnForced(dimension))return false;
+        NBTTagCompound tag=new NBTTagCompound();tag.setInteger("dimension",dimension);tag.setInteger("x",pos.posX);tag.setInteger("y",pos.posY);tag.setInteger("z",pos.posZ);tag.setBoolean("NativeBinding",true);save(player,tag);return true;
+    }
+    public static final class SpawnSnapshot {private final ChunkCoordinates pos;private final boolean forced;private SpawnSnapshot(EntityPlayer player,int dimension){ChunkCoordinates current=player.getBedLocation(dimension);pos=current==null?null:new ChunkCoordinates(current);forced=player.isSpawnForced(dimension);}}
+    public static SpawnSnapshot snapshot(EntityPlayer player,int dimension){return new SpawnSnapshot(player,dimension);}
+    public static void changed(EntityPlayer player,int dimension,ChunkCoordinates requested,boolean forced,SpawnSnapshot before){
+        if(player.worldObj==null||player.worldObj.isRemote)return;Binding binding=BINDING.get();if(binding!=null&&binding.player==player)return;
+        SpawnRestore restoring=RESTORING.get();if(restoring!=null&&restoring.player==player&&restoring.dimension==dimension&&Objects.equals(restoring.pos,requested)&&restoring.forced==forced)return;
+        if(!Objects.equals(before.pos,player.getBedLocation(dimension))||before.forced!=player.isSpawnForced(dimension))clear(player);
+    }
+    /** Native respawn restores a stored point; only genuine later spawn changes replace a binding. */
+    public static final class SpawnRestore {private final EntityPlayer player;private final int dimension;private final ChunkCoordinates pos;private final boolean forced;private SpawnRestore(EntityPlayer player,ChunkCoordinates pos,boolean forced){this.player=player;this.dimension=player.dimension;this.pos=pos;this.forced=forced;}}
+    public static SpawnRestore beforeRestore(EntityPlayer player,ChunkCoordinates pos,boolean forced){SpawnRestore previous=RESTORING.get();RESTORING.set(new SpawnRestore(player,pos,forced));return previous;}
+    public static void afterRestore(SpawnRestore previous){if(previous==null)RESTORING.remove();else RESTORING.set(previous);}
+    public static final class Context {
+        public final int dimension;public final WorldServer worldObj;public final ChunkCoordinates anchor,exit;private final EntityPlayerMP owner;private boolean consumed;
+        private Context(EntityPlayerMP owner,WorldServer world,ChunkCoordinates anchor,ChunkCoordinates exit){this.owner=owner;this.worldObj=world;this.dimension=world==null?0:world.provider.dimensionId;this.anchor=anchor;this.exit=exit;}
+    }
+    public static Context begin(EntityPlayerMP player,boolean endReturn){
+        if(Content.uab||!com.glowingfederal.moderncombatmovement.config.Settings.kit(false)||endReturn||player.worldObj==null||player.worldObj.isRemote||player.getHealth()>0)return null;
+        NBTTagCompound tag=saved(player);if(!valid(tag))return null;int dimension=tag.getInteger("dimension");ChunkCoordinates anchor=point(tag);
+        if(tag.getBoolean("NativeBinding")&&(!anchor.equals(player.getBedLocation(dimension))||!player.isSpawnForced(dimension))){clear(player);return null;}
+        MinecraftServer server=FMLCommonHandler.instance().getMinecraftServerInstance();if(server==null||!DimensionManager.isDimensionRegistered(dimension)||dimension==-1&&!server.getAllowNether())return null;
+        WorldServer world=DimensionManager.getWorld(dimension);if(world==null){DimensionManager.initDimension(dimension);world=DimensionManager.getWorld(dimension);}if(world==null||!world.provider.isHellWorld||anchor.posY>=world.getHeight()-1)return null;
+        if(world.getBlock(anchor.posX,anchor.posY,anchor.posZ)!=Anchors.standalone||world.getBlockMetadata(anchor.posX,anchor.posY,anchor.posZ)==0)return null;
+        if(!tag.getBoolean("NativeBinding")){
+            Binding attempt=new Binding(player),previous=BINDING.get();BINDING.set(attempt);
+            try{player.setSpawnChunk(anchor,true,dimension);}finally{if(previous==null)BINDING.remove();else BINDING.set(previous);}
+            if(!anchor.equals(player.getBedLocation(dimension))||!player.isSpawnForced(dimension))return null;
+            tag.setBoolean("NativeBinding",true);save(player,tag);
+        }
+        ChunkCoordinates exit=findExit(world,anchor,player);return exit==null?null:new Context(player,world,anchor,exit);
+    }
+    private static boolean harmless(World world,int x,int y,int z){Material material=world.getBlock(x,y,z).getMaterial();return !material.isLiquid()&&material!=Material.fire&&material!=Material.portal;}
+    private static ChunkCoordinates findExit(WorldServer world,ChunkCoordinates anchor,EntityPlayer player){
+        for(int dy:new int[]{0,1,-1})for(int radius=1;radius<=2;radius++)for(int dx=-radius;dx<=radius;dx++)for(int dz=-radius;dz<=radius;dz++)if(Math.max(Math.abs(dx),Math.abs(dz))==radius){ChunkCoordinates pos=new ChunkCoordinates(anchor.posX+dx,anchor.posY+dy,anchor.posZ+dz);if(safe(world,pos,player))return pos;}
+        ChunkCoordinates top=new ChunkCoordinates(anchor.posX,anchor.posY+1,anchor.posZ);return safe(world,top,player)?top:null;
+    }
+    private static boolean safe(WorldServer world,ChunkCoordinates pos,EntityPlayer player){
+        if(pos.posY<1||pos.posY>world.getHeight()-2||Math.abs((long)pos.posX)>=30000000||Math.abs((long)pos.posZ)>=30000000)return false;
+        Block below=world.getBlock(pos.posX,pos.posY-1,pos.posZ);String name=Block.blockRegistry.getNameForObject(below);
+        if(!below.isSideSolid(world,pos.posX,pos.posY-1,pos.posZ,ForgeDirection.UP)||name!=null&&name.contains("magma")||!harmless(world,pos.posX,pos.posY,pos.posZ)||!harmless(world,pos.posX,pos.posY+1,pos.posZ))return false;
+        return world.getCollidingBoundingBoxes(player,AxisAlignedBB.getBoundingBox(pos.posX+.2,pos.posY,pos.posZ+.2,pos.posX+.8,pos.posY+1.8,pos.posZ+.8)).isEmpty();
+    }
+    public static Context push(Context context){Context previous=RESPAWN.get();if(context==null)RESPAWN.remove();else RESPAWN.set(context);return previous;}
+    public static boolean allow(WorldProvider provider,boolean original){Context context=RESPAWN.get();return original||context!=null&&context.worldObj.provider==provider;}
+    public static ChunkCoordinates bed(EntityPlayerMP player,int dimension,ChunkCoordinates original){Context context=RESPAWN.get();return context!=null&&context.owner==player&&context.dimension==dimension?context.exit:original;}
+    public static boolean forced(EntityPlayerMP player,int dimension,boolean original){Context context=RESPAWN.get();return original||context!=null&&context.owner==player&&context.dimension==dimension;}
+    public static ChunkCoordinates stored(EntityPlayerMP player,ChunkCoordinates original){Context context=RESPAWN.get();return context!=null&&player.dimension==context.dimension&&context.owner.getUniqueID().equals(player.getUniqueID())&&context.exit.equals(original)?context.anchor:original;}
+    public static void finish(Context context,EntityPlayerMP player){
+        if(context==null||context.consumed||player==null||player.worldObj!=context.worldObj||player.dimension!=context.dimension||!player.isEntityAlive()||!context.worldObj.playerEntities.contains(player)||!matches(saved(player),context.dimension,context.anchor)||!context.anchor.equals(player.getBedLocation(context.dimension))||!player.isSpawnForced(context.dimension))return;
+        if(Math.abs(player.posX-context.exit.posX-.5)>1||Math.abs(player.posZ-context.exit.posZ-.5)>1||player.posY<context.exit.posY||player.posY>context.exit.posY+2)return;
+        int charges=Math.min(4,context.worldObj.getBlockMetadata(context.anchor.posX,context.anchor.posY,context.anchor.posZ));if(context.worldObj.getBlock(context.anchor.posX,context.anchor.posY,context.anchor.posZ)!=Anchors.standalone||charges==0)return;
+        context.consumed=true;if(Anchors.charge(context.worldObj,context.anchor.posX,context.anchor.posY,context.anchor.posZ,charges-1))context.worldObj.playSoundEffect(context.anchor.posX+.5,context.anchor.posY+.5,context.anchor.posZ+.5,"random.click",1,1);
+    }
+
 }

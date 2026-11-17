@@ -11,7 +11,8 @@ import com.glowingfederal.moderncombatmovement.pose.PlayerHooks;
 @Mixin(value=Minecraft.class,remap=false)
 public abstract class SpearInputMixin {
  @Inject(method={"clickMouse","func_147116_af"},at=@At("HEAD"),cancellable=true)private void mcm$jab(CallbackInfo ci){
-  EntityPlayer p=Minecraft.getMinecraft().thePlayer;if(p==null||!SpearMechanics.owned(p))return;
+  EntityPlayer p=Minecraft.getMinecraft().thePlayer;if(p==null)return;
+  if(!SpearMechanics.owned(p)){net.minecraft.util.MovingObjectPosition hit=Minecraft.getMinecraft().objectMouseOver;if(com.glowingfederal.moderncombatmovement.config.Settings.combat(true)&&CombatHooks.profile(p)!=null&&(hit==null||hit.typeOfHit==net.minecraft.util.MovingObjectPosition.MovingObjectType.MISS)){Packets.channel.sendToServer(new Packets.Miss(p));PlayerHooks.state(p).attackTicks=0;}return;}
   if(CombatMath.strength(PlayerHooks.state(p).attackTicks,0,CombatHooks.speed(p))>=1){Packets.channel.sendToServer(new Packets.Jab());PlayerHooks.state(p).attackTicks=0; p.swingItem();}
   ci.cancel();
  }

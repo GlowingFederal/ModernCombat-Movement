@@ -10,7 +10,6 @@ apply from: '../../build-logic/shared.gradle'
 jar.finalizedBy 'reobfJar'
 
 repositories { maven { url = 'https://repo.spongepowered.org/maven/' }; maven { url = 'https://maven.cleanroommc.com' } }
-dependencies { compileOnly('org.spongepowered:mixin:0.8.5') { transitive = false } }
 tasks.withType(JavaCompile).configureEach { options.compilerArgs.add('-proc:none') }
 jar.manifest.attributes('FMLCorePlugin': 'com.glowingfederal.moderncombatmovement.bootstrap.Bootstrap', 'FMLCorePluginContainsFMLMod': 'true', 'ForceLoadAsMod': 'true')
 repositories { maven { url = 'https://nexus.gtnewhorizons.com/repository/public/' } }
@@ -18,3 +17,5 @@ dependencies { runtimeOnly('io.github.legacymoddingmc:unimixins:0.3.1:dev') { tr
 dependencies { compileOnly('io.github.legacymoddingmc:unimixins:0.3.1:dev') { transitive = false } }
 
 jar { from('../../LICENSES/UAB-LGPL-3.0.txt') { into 'META-INF' } }
+
+jar { from('../../LICENSES/Combatives-Source-Available.txt') { into 'META-INF' } }

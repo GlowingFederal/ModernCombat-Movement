@@ -85,4 +85,6 @@ public final class CrossbowBolt extends EntityArrow implements IEntityAdditional
  @Override public void readEntityFromNBT(NBTTagCompound tag) { super.readEntityFromNBT(tag);piercing=Math.max(0,Math.min(4,tag.getInteger("MCMPiercing")));ammunition=new ItemStack(tag.getCompoundTag("MCMAmmo"));if(ammunition.isEmpty())ammunition=new ItemStack(Items.ARROW);struck.clear();NBTTagList ids=tag.getTagList("MCMPierced",8);for(int i=0;i<Math.min(5,ids.tagCount());i++)try{struck.add(UUID.fromString(ids.getStringTagAt(i)));}catch(IllegalArgumentException invalid){} }
  public void writeSpawnData(ByteBuf b) { b.writeInt(shootingEntity==null?-1:shootingEntity.getEntityId());b.writeByte(piercing);ByteBufUtils.writeItemStack(b,ammunition); }
  public void readSpawnData(ByteBuf b) { shootingEntity=world.getEntityByID(b.readInt());piercing=b.readUnsignedByte();ammunition=ByteBufUtils.readItemStack(b); }
+ @Override public void playSound(net.minecraft.util.SoundEvent sound,float volume,float pitch){if(sound==net.minecraft.init.SoundEvents.ENTITY_ARROW_HIT)ItemSounds.play(this,"item.crossbow.hit",volume,pitch);else super.playSound(sound,volume,pitch);}
+
 }

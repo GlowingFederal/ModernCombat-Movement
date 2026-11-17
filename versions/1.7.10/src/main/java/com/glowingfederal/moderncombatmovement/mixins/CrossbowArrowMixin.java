@@ -29,4 +29,9 @@ public abstract class CrossbowArrowMixin {
  }
 
  @ModifyConstant(method={"onUpdate","func_70071_h_"},constant=@Constant(floatValue=.8F),require=0) private float mcm$waterDrag(float nativeValue) { return (Object)this instanceof CrossbowBolt ? .6F : nativeValue; }
+ @Redirect(method={"onUpdate","func_70071_h_"},at=@At(value="INVOKE",target="Lnet/minecraft/block/Block;onEntityCollidedWithBlock(Lnet/minecraft/world/World;IIILnet/minecraft/entity/Entity;)V"),require=0)
+ private void mcm$block(net.minecraft.block.Block block,World world,int x,int y,int z,Entity arrow){if(!(arrow instanceof CrossbowBolt)||!com.glowingfederal.moderncombatmovement.compat.ProjectileBlocks.hit(world,((EntityArrow)arrow).shootingEntity,x,y,z))block.onEntityCollidedWithBlock(world,x,y,z,arrow);}
+ @Redirect(method={"onUpdate","func_70071_h_"},at=@At(value="INVOKE",target="Lnet/minecraft/block/Block;func_149670_a(Lnet/minecraft/world/World;IIILnet/minecraft/entity/Entity;)V"),require=0)
+ private void mcm$blockSrg(net.minecraft.block.Block block,World world,int x,int y,int z,Entity arrow){mcm$block(block,world,x,y,z,arrow);}
+
 }

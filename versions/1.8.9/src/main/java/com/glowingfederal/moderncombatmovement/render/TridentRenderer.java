@@ -20,7 +20,7 @@ public class TridentRenderer extends Render<Entity> {
 	@Override protected ResourceLocation getEntityTexture(Entity entity) { return TEXTURE; }
 	@Override public void doRender(Entity entity, double x, double y, double z, float yaw, float partial) {
 		bindEntityTexture(entity); GL11.glPushMatrix();
-		try { GL11.glTranslated(x, y, z); GL11.glRotatef(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial - 90, 0, 1, 0); GL11.glRotatef(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partial + 90, 0, 0, 1); model.render(.0625F); }
+		try { GL11.glTranslated(x, y, z); GL11.glRotatef(entity.prevRotationYaw + (entity.rotationYaw - entity.prevRotationYaw) * partial - 90, 0, 1, 0); GL11.glRotatef(entity.prevRotationPitch + (entity.rotationPitch - entity.prevRotationPitch) * partial + 90, 0, 0, 1); model.render(.0625F); ModelGlint.render(((com.glowingfederal.moderncombatmovement.compat.TridentProjectile)entity).enchanted(),entity.ticksExisted+partial,.33333334F,()->model.render(.0625F),TEXTURE); }
 		finally { GL11.glPopMatrix(); }
 	}
 }

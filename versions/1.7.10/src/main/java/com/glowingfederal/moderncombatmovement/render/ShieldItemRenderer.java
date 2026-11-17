@@ -31,6 +31,7 @@ public final class ShieldItemRenderer implements IItemRenderer {
                 else thirdPerson(raised);
             }
             plate.render(1/16F);handle.render(1/16F);
+            ModelGlint.render(stack.isItemEnchanted(),Minecraft.getSystemTime()/50F,.33333334F,()->{plate.render(1/16F);handle.render(1/16F);},new ResourceLocation("moderncombatmovement:textures/entity/shield_base_nopattern.png"));
         }finally{GL11.glPopMatrix();GL11.glPopAttrib();}
     }
     private static void firstPerson(boolean raised){

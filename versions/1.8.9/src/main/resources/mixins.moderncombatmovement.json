@@ -10,6 +10,8 @@
     "WebMixin",
     "WebMovementMixin",
     "SlimeMixin",
+    "ArrowGroundMixin",
+    "ArrowGroundSrgMixin",
     "CrossbowArrowMixin",
     "EquipmentEnchantMixin",
     "ForgeArmorMixin",
@@ -21,6 +23,7 @@
     "FoodRegenMixin",
     "FlightMixin",
     "FlightTravelMixin",
+    "GroundRocketMixin",
     "FireworkUseMixin",
     "FlightPacketMixin",
     "OffhandPlayerMixin",
@@ -31,7 +34,21 @@
     "ShieldDamageMixin",
     "ShieldPlayerMixin",
     "OffhandEntityMixin",
-    "OffhandFishingMixin"
+    "OffhandFishingMixin",
+    "ToolInteractionMixin",
+    "AnchorNativeRespawnMixin",
+    "AnchorSpawnPointMixin",
+    "FireproofItemMixin",
+    "PearlUseMixin",
+    "SlowFallingMixin",
+    "PotionRulesMixin",
+    "CrystalStateMixin",
+    "ItemRepairMixin",
+    "PearlImpactMixin",
+    "SwimSoundMixin",
+    "GroundMovementMixin",
+    "FlightSpeedMixin",
+    "FlightSpeedDevMixin"
   ],
   "client": [
     "InputMixin",
@@ -50,7 +67,11 @@
     "OffhandControllerMixin",
     "OffhandSlotBackgroundMixin",
     "OffhandObserverMixin",
-    "OffhandCreativeGuiMixin"
+    "OffhandCreativeGuiMixin",
+    "TotemStatusMixin",
+    "ItemCooldownOverlayMixin",
+    "SpearItemMotionMixin",
+    "FishingRenderMixin"
   ],
   "injectors": {
     "defaultRequire": 1

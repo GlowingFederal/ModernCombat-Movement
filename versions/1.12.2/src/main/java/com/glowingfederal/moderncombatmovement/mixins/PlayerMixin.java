@@ -9,6 +9,7 @@ import com.glowingfederal.moderncombatmovement.pose.*;
 import com.glowingfederal.moderncombatmovement.ModernCombatMovement;
 @Mixin(value=EntityPlayer.class, remap=false)
 public abstract class PlayerMixin implements PlayerAccess {
+ @Inject(method={"writeEntityToNBT","func_70014_b"},at=@At("RETURN")) private void mcm$saveSpeed(net.minecraft.nbt.NBTTagCompound data,CallbackInfo ci){com.glowingfederal.moderncombatmovement.movement.CreativeFlight.save((EntityPlayer)(Object)this,data);}
  @Unique private final PlayerState mcm$state=new PlayerState();
  public PlayerState mcm$state() { return mcm$state; }
  @Inject(method={"onUpdate","func_70071_h_"},at=@At("HEAD")) private void mcm$before(CallbackInfo ci) { PlayerHooks.before((EntityPlayer)(Object)this); }
@@ -29,5 +30,4 @@ public abstract class PlayerMixin implements PlayerAccess {
   com.glowingfederal.moderncombatmovement.combat.CombatHooks.registerAttribute((EntityPlayer)(Object)this);
  }
 
- @Inject(method={"setSpawnPoint","func_180473_a"},at=@At("HEAD")) private void mcm$bed(net.minecraft.util.math.BlockPos pos,boolean forced,CallbackInfo ci) { com.glowingfederal.moderncombatmovement.compat.AnchorRespawn.clearForBed((EntityPlayer)(Object)this); }
 }

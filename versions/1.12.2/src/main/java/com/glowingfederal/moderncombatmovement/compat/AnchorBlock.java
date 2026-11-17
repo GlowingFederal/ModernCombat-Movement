@@ -11,5 +11,9 @@ public final class AnchorBlock extends Block {
  @Override public net.minecraft.block.state.IBlockState getStateFromMeta(int meta) { return getDefaultState().withProperty(CHARGE,Math.min(4,Math.max(0,meta))); }
  @Override public int getMetaFromState(net.minecraft.block.state.IBlockState state) { return state.getValue(CHARGE); }
  @Override public int damageDropped(net.minecraft.block.state.IBlockState state) { return 0; }
+ @Override public net.minecraft.block.material.EnumPushReaction getPushReaction(net.minecraft.block.state.IBlockState state) { return net.minecraft.block.material.EnumPushReaction.BLOCK; }
+ @Override public int getLightValue(net.minecraft.block.state.IBlockState state,IBlockAccess world,net.minecraft.util.math.BlockPos pos) { return getMetaFromState(state)*15/4; }
+ @Override public boolean hasComparatorInputOverride(net.minecraft.block.state.IBlockState state) { return true; }
+ @Override public int getComparatorInputOverride(net.minecraft.block.state.IBlockState state,World world,net.minecraft.util.math.BlockPos pos) { return getMetaFromState(state)*15/4; }
 
 }

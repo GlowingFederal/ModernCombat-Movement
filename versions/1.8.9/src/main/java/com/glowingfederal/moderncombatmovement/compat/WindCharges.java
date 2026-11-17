@@ -7,6 +7,7 @@ import com.glowingfederal.moderncombatmovement.pose.PlayerHooks;
 public final class WindCharges {
  private static Item item;
  private WindCharges(){}
+ public static boolean known(ItemStack stack){return stack!=null&&stack.getItem()==item;}
  public static void register(){
   item=Content.uab?net.minecraftforge.fml.common.registry.GameRegistry.findItem("etfuturum","wind_charge"):new WindChargeItem();if(!Content.uab){net.minecraftforge.fml.common.registry.GameRegistry.registerItem(item,"wind_charge");Content.ITEMS.put("wind_charge",item);}
   net.minecraftforge.fml.common.registry.EntityRegistry.registerModEntity(WindChargeProjectile.class,"wind_charge",5,com.glowingfederal.moderncombatmovement.ModernCombatMovement.instance,64,1,true);
@@ -18,7 +19,7 @@ public final class WindCharges {
   WindChargeProjectile projectile=new WindChargeProjectile(p.worldObj,p);projectile.launch(p);
   if(!p.worldObj.spawnEntityInWorld(projectile))return false;
   PlayerHooks.state(p).windCooldown=10; if(!p.capabilities.isCreativeMode)--stack.stackSize;
-  p.worldObj.playSoundAtEntity(p,"random.bow",.5F,.4F/(p.getRNG().nextFloat()*.4F+.8F)); return true;
+  ItemSounds.play(p,"entity.wind_charge.throw",.5F,.4F/(p.getRNG().nextFloat()*.4F+.8F)); return true;
  }
  public static void tick(EntityPlayer p){if(PlayerHooks.state(p).windCooldown>0)PlayerHooks.state(p).windCooldown--;if((p.onGround&&p.motionY<=0)||p.isInWater()||p.isOnLadder()||p.capabilities.isFlying)clear(p);}
  private static void clear(EntityLivingBase e){e.getEntityData().removeTag("MCMWindLaunchY");}

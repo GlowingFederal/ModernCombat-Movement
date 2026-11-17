@@ -34,3 +34,5 @@ jar {
 configurations.runtimeClasspath.extendsFrom(configurations.embeddedMixin)
 
 jar { from('../../LICENSES/UAB-LGPL-3.0.txt') { into 'META-INF' } }
+
+jar { from('../../LICENSES/Combatives-Source-Available.txt') { into 'META-INF' } }

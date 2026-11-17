@@ -16,21 +16,21 @@ public final class Anchors {
    standalone=new AnchorBlock(); standalone.setRegistryName("moderncombatmovement","respawn_anchor"); net.minecraftforge.fml.common.registry.GameRegistry.findRegistry(Block.class).register(standalone); net.minecraftforge.fml.common.registry.GameRegistry.findRegistry(Item.class).register(new ItemBlock(standalone).setRegistryName(standalone.getRegistryName()));
   }
   net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new Events());
-  AnchorRespawn.init();
  }
+ public static boolean charge(World w,int x,int y,int z,int count){net.minecraft.util.math.BlockPos pos=new net.minecraft.util.math.BlockPos(x,y,z);net.minecraft.block.state.IBlockState state=w.getBlockState(pos);return known(state.getBlock())&&w.setBlockState(pos,state.getBlock().getStateFromMeta(Math.max(0,Math.min(4,count))),3);}
  public static boolean known(Block block) { Object name=Block.REGISTRY.getNameForObject(block); return block==standalone || name!=null && "etfuturum:respawn_anchor".equals(name.toString()); }
  public static boolean use(World w,int x,int y,int z,EntityPlayer p,ItemStack held) {
   if(!com.glowingfederal.moderncombatmovement.config.Settings.kit(w.isRemote)) return false;
   Block block=w.getBlockState(new net.minecraft.util.math.BlockPos(x,y,z)).getBlock(); if(!known(block)) return false;
   int charge=block.getMetaFromState(w.getBlockState(new net.minecraft.util.math.BlockPos(x,y,z)));
   if(held!=null && !held.isEmpty() && held.getItem()==Item.getItemFromBlock(Blocks.GLOWSTONE) && charge<4) {
-   if(!w.isRemote) { w.setBlockState(new net.minecraft.util.math.BlockPos(x,y,z),block.getStateFromMeta(charge+1),3); if(!p.capabilities.isCreativeMode) held.shrink(1); p.inventory.markDirty(); }
+   if(!w.isRemote && charge(w,x,y,z,charge+1)) { if(!p.capabilities.isCreativeMode) held.shrink(1); p.inventory.markDirty(); }
    return true;
   }
   if(charge==0) return false;
   if(w.provider.isNether()) {
    if(block!=standalone) return false; // UAB retains its complete native respawn binding lifecycle.
-   if(!w.isRemote) { NBTTagCompound persisted=p.getEntityData().getCompoundTag(EntityPlayer.PERSISTED_NBT_TAG); NBTTagCompound anchor=new NBTTagCompound(); anchor.setInteger("dimension",p.dimension); anchor.setInteger("x",x);anchor.setInteger("y",y);anchor.setInteger("z",z);persisted.setTag("MCMAnchor",anchor);p.getEntityData().setTag(EntityPlayer.PERSISTED_NBT_TAG,persisted); }
+   if(!w.isRemote)AnchorRespawn.bind(p,w,new net.minecraft.util.math.BlockPos(x,y,z));
    return true;
   }
   if(!w.isRemote) {
@@ -44,6 +44,7 @@ public final class Anchors {
   @SubscribeEvent(priority=EventPriority.HIGH) public void interact(PlayerInteractEvent.RightClickBlock e) {
 
    EntityPlayer p=e.getEntityPlayer(); World w=p.world; int x=e.getPos().getX(),y=e.getPos().getY(),z=e.getPos().getZ();
+   if(p.isSneaking()&&(!p.getHeldItemMainhand().isEmpty()||!p.getHeldItemOffhand().isEmpty()))return;
    if(!known(w.getBlockState(new net.minecraft.util.math.BlockPos(x,y,z)).getBlock())) return;
    if(!(w.isBlockModifiable(p,new net.minecraft.util.math.BlockPos(x,y,z)) && p.canPlayerEdit(new net.minecraft.util.math.BlockPos(x,y,z),e.getFace(),p.getHeldItem(e.getHand())))) return;
    ItemStack held=p.getHeldItem(e.getHand());

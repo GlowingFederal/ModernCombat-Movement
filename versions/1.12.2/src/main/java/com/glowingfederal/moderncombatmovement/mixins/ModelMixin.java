@@ -13,17 +13,22 @@ public abstract class ModelMixin {
  @org.spongepowered.asm.mixin.Unique private float mcm$spearSwing;
  @org.spongepowered.asm.mixin.Unique private boolean mcm$spear;
  @Inject(method={"setRotationAngles","func_78087_a"},at=@At("HEAD")) private void mcm$crouch(float limb,float amount,float age,float yaw,float pitch,float scale,Entity entity,CallbackInfo ci) {
+  if(com.glowingfederal.moderncombatmovement.render.ModelRenderContext.firstPersonArms>0){mcm$spear=false;return;}
+  if(entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.render.TridentPoses.active((EntityPlayer)entity)){ModelBiped model=(ModelBiped)(Object)this;if(model.rightArmPose==ModelBiped.ArmPose.BOW_AND_ARROW)model.rightArmPose=ModelBiped.ArmPose.ITEM;if(model.leftArmPose==ModelBiped.ArmPose.BOW_AND_ARROW)model.leftArmPose=ModelBiped.ArmPose.ITEM;}
   mcm$spear=entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.render.SpearPoses.owned((EntityPlayer)entity);
   if(mcm$spear){mcm$spearSwing=((ModelBiped)(Object)this).swingProgress;((ModelBiped)(Object)this).swingProgress=0;}
 
   if(Settings.rendering && entity instanceof EntityPlayer && PlayerHooks.active((EntityPlayer)entity)) ((ModelBiped)(Object)this).isSneak=PlayerHooks.state((EntityPlayer)entity).pose==Pose.CROUCHING;
  }
  @Inject(method={"setRotationAngles","func_78087_a"},at=@At("RETURN")) private void mcm$crossbow(float limb,float amount,float age,float yaw,float pitch,float scale,Entity entity,CallbackInfo ci) {
+  if(com.glowingfederal.moderncombatmovement.render.ModelRenderContext.firstPersonArms>0){mcm$spear=false;return;}
+  if(entity instanceof EntityPlayer)com.glowingfederal.moderncombatmovement.render.SwimPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,limb,amount,age);
   if(entity instanceof EntityPlayer&&com.glowingfederal.moderncombatmovement.movement.FlightHooks.flying((EntityPlayer)entity)){((ModelBiped)(Object)this).bipedHead.rotateAngleX=-(float)Math.PI/4;((ModelBiped)(Object)this).bipedHeadwear.rotateAngleX=-(float)Math.PI/4;}
 
   if(mcm$spear){((ModelBiped)(Object)this).swingProgress=mcm$spearSwing;}
 
   if(entity instanceof EntityPlayer)com.glowingfederal.moderncombatmovement.render.SpearPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age,mcm$spear?mcm$spearSwing:0);
   if(Settings.rendering && entity instanceof EntityPlayer) com.glowingfederal.moderncombatmovement.render.CrossbowPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity,age);
+  if(Settings.rendering&&entity instanceof EntityPlayer)com.glowingfederal.moderncombatmovement.render.TridentPoses.apply((ModelBiped)(Object)this,(EntityPlayer)entity);
  }
 }

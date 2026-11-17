@@ -18,11 +18,12 @@ public abstract class ModernHandMixin {
   boolean active=p.isHandActive();ItemStack use=p.getActiveItemStack();
   if(active&&(use.getItem() instanceof net.minecraft.item.ItemBow||Crossbows.known(use))&&p.getActiveHand()!=hand){ci.cancel();return;}
   if(hand==EnumHand.OFF_HAND&&Crossbows.known(p.getHeldItemMainhand())&&Crossbows.charged(p.getHeldItemMainhand())&&!active){ci.cancel();return;}
-  if(!Crossbows.known(stack)&&ModernEquipment.spear(stack)==null)return;
+  if(!Crossbows.known(stack)&&ModernEquipment.spear(stack)==null&&!Tridents.known(stack))return;
   ci.cancel();boolean left=(hand==EnumHand.MAIN_HAND?p.getPrimaryHand():p.getPrimaryHand().opposite())==EnumHandSide.LEFT;int sign=left?-1:1;
   GlStateManager.pushMatrix();try{
    if(Crossbows.known(stack))CrossbowHandTransforms.apply(HandMatrices.INSTANCE,sign,equip,swing,active&&p.getActiveHand()==hand,p.getItemInUseMaxCount()+partial-1,Crossbows.chargeTime(stack),Crossbows.charged(stack),hand==EnumHand.MAIN_HAND);
-   else SpearAnimationMath.firstPerson(HandMatrices.INSTANCE,ModernEquipment.spear(stack),sign,equip,swing,active&&p.getActiveHand()==hand?p.getItemInUseMaxCount()+partial:0);
+   else if(Tridents.known(stack))TridentHandTransforms.apply(HandMatrices.INSTANCE,sign,equip,swing,active&&p.getActiveHand()==hand,p.getItemInUseMaxCount()+partial-1,com.glowingfederal.moderncombatmovement.pose.PlayerHooks.state(p).spinTicks>0);
+   else SpearAnimationMath.firstPerson(HandMatrices.INSTANCE,ModernEquipment.spear(stack),sign,equip,swing,active&&p.getActiveHand()==hand,p.getItemInUseMaxCount()+partial-1,com.glowingfederal.moderncombatmovement.pose.PlayerHooks.state(p).kineticHitTicks+partial);
    ((ItemRenderer)(Object)this).renderItemSide(p,stack,left?ItemCameraTransforms.TransformType.FIRST_PERSON_LEFT_HAND:ItemCameraTransforms.TransformType.FIRST_PERSON_RIGHT_HAND,left);
   }finally{GlStateManager.popMatrix();}
  }

@@ -32,16 +32,17 @@ public final class Shields {
  public static boolean block(EntityPlayer p,DamageSource source,float damage){
   if(!(damage>0)||Float.isInfinite(damage)||!canBlock(p,source))return false;
   ItemStack shield=((PlayerUseAccess)p).mcm$useStack();
+  boolean offhand=com.glowingfederal.moderncombatmovement.offhand.Offhands.get(p)==shield;
   if(damage>=3)shield.damageItem((int)Math.min(Integer.MAX_VALUE,Math.floor(1D+damage)),p);
   Entity direct=source.getSourceOfDamage();
-  if(!source.isProjectile()&&direct instanceof EntityLivingBase)disable(p,(EntityLivingBase)direct);
-  if(shield.stackSize<=0){if(com.glowingfederal.moderncombatmovement.offhand.Offhands.using(p))com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);else p.destroyCurrentEquippedItem();p.clearItemInUse();}
-  p.worldObj.playSoundAtEntity(p,"random.anvil_land",.3F,.8F+p.getRNG().nextFloat()*.4F);return true;
+  if(shield.stackSize>0&&!source.isProjectile()&&direct instanceof EntityLivingBase)disable(p,(EntityLivingBase)direct);
+  if(shield.stackSize<=0){ItemSounds.play(p,"item.shield.break",.8F,.8F+p.getRNG().nextFloat()*.4F);if(offhand)com.glowingfederal.moderncombatmovement.offhand.Offhands.set(p,null);else p.destroyCurrentEquippedItem();p.clearItemInUse();}
+  ItemSounds.play(p,"item.shield.block",1,.8F+p.getRNG().nextFloat()*.4F);return true;
  }
  public static void disable(EntityPlayer p,EntityLivingBase attacker){
   // Modern weapon component: known axes always disable for five seconds; Efficiency/sprinting do not roll a chance.
   ItemStack weapon=attacker.getHeldItem();com.glowingfederal.moderncombatmovement.api.ItemProperties profile=weapon==null?null:com.glowingfederal.moderncombatmovement.api.CombatApi.find(CombatHooks.id(weapon));
-  if(profile!=null&&profile.kind==com.glowingfederal.moderncombatmovement.api.ItemProperties.Kind.AXE){PlayerHooks.state(p).shieldCooldown=100;p.clearItemInUse();}
+  if(profile!=null&&profile.kind==com.glowingfederal.moderncombatmovement.api.ItemProperties.Kind.AXE){PlayerHooks.state(p).shieldCooldown=100;p.clearItemInUse();ItemSounds.play(p,"item.shield.break",.8F,.8F+p.getRNG().nextFloat()*.4F);}
  }
  private static final class ShieldAdapter implements com.glowingfederal.moderncombatmovement.offhand.OffhandUses.Adapter {
   public ItemStack use(ItemStack stack,net.minecraft.world.World world,EntityPlayer p){Shields.use(stack,p);return stack;}
