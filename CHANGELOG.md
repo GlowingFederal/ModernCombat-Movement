@@ -58,3 +58,8 @@ Reuse owned rocket damage and collision calculations for native ground fireworks
 2026-11-17 04:28 — Complete the shared item presentation, controls and feedback paths
 
 Adapt native spear use/attack selection, item pivots and actual-hand poses; correct stale shield/offhand release and sword-block isolation; clear invalid gliding states and reuse Combatives' legacy swim/crawl patterns with explicit optional ownership. Add hold/toggle movement controls, server-capped temporary creative-flight boost, attack indicators and actual item cooldown overlays. Reuse native item/equipment/flight sounds, gust/sweep/smash effects and UAB block hooks; retain one authoritative playback and movement owner. Complete projectile, repair, totem and saved crystal-ritual lifecycle corrections while preserving existing identities and excluding standalone acquisition changes.
+
+
+2026-11-17 22:11 — Preserve cooperative legacy potion identities with UAB
+
+Register all five MCM effects through the shared persistent allocator on 1.7.10 and 1.8.9. This prevents old default IDs from occupying slots already reserved for UAB effects before its late registration, which could leave Forge errored and prevent integrated worlds from starting. Preserve compatible legacy IDs, nondefault explicitly assigned IDs and recorded MCM identities. Import conflicting unrecorded historical defaults through automatic allocation and validate ambiguous old MCM world snapshots before other cooperating owners can extend them after that import. Resolve optional UAB Glowing only after registration. Native 1.12.2 namespaced registration remains unchanged.

@@ -1,7 +1,17 @@
 # Development status
 
-Last fully packaged development build: **0.1.0.33**. All three distributions passed compilation, production remapping/packaging and Java 8 archive checks. The current combined item, animation, controls, HUD and audiovisual source batch has not yet been compiled or exercised. The full task remains **NOT RELEASE READY**.
+Final packaged candidate: **0.1.0.41**. All three targets compiled, passed production remapping/packaging and Java 8 archive verification. The shared suite has **47 distinct cases** (including four allocation regression tests), exercised independently by common and each target. No commit or remote release was created.
 
+## Current acceptance evidence
+
+- The 1.7.10 full Retrograde startup failure was a persisted potion-ID collision: MCM Wind Charged occupied UAB Glowing's ID 28 before UAB's late registration. Both legacy targets now register every effect through the cooperative allocator. Compatible saved IDs remain fixed; conflicting unrecorded historical defaults are imported safely. Ambiguous older MCM snapshots are rejected before other owners can rewrite them.
+- Final 0.1.0.41 ran on all seven dedicated loadouts, plus the full supplied Retrograde pack. The full pack passed integrated world entry, save, exit and reload; actual UAB/MCM effect identities, amplifiers and saved durations survived. The negative ambiguous-save fixture was rejected without rewriting its potion snapshot.
+- Final attack cooldowns were checked through native attacks on real connected players on 1.7.10 and 1.8.9 standalone and 1.12.2 with UAB. Rapid attacks did less damage and reset the native gameplay counter. Native client attack callbacks and framebuffer inspection confirmed CROSSHAIR and HOTBAR indicators on all three targets.
+- Final server restart/reconnection preserved real main/offhand stacks and custom NBT on six loadouts. Standalone 1.12.2's final connection timed out before joining; its server started, its earlier 0.1.0.40 connected path passed, and final native combat/HUD checks passed on the 1.12.2 UAB loadout. This is a verification limitation, not a diagnosed production defect.
+- Broader 0.1.0.40 production callbacks covered shields, tridents, crossbows, ammunition, effects/clouds, equipment repair, totems, spears, mace, crystals, movement and Combatives ownership on seven loadouts. Seven client rendering configurations produced native framebuffers. These paths were unchanged by the final save-guard priority correction; this is retained callback/visual evidence, not full player-driven acceptance.
+- Sustained focused key/mouse use, complete remote-player animation/observer combat, audible fidelity, latency and long-session performance remain unqualified. Hidden clients intentionally clear held actions on focus loss. The original comprehensive release gate is not fully met. Following the user's narrowed cooldown/indicator gate, the recommendation is **CONDITIONALLY READY**, with these limitations retained.
+
+The planning tables below are retained historical notes; their old pending/uncompiled labels are superseded by the evidence above, without implying that every planned gameplay scenario passed.
 
 ## Current release-development work
 

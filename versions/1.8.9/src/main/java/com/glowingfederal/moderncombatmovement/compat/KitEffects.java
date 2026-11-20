@@ -22,13 +22,22 @@ public final class KitEffects {
  public static void register(File file) {
   Configuration c=new Configuration(file);c.load();Map<String,Integer> requests=new TreeMap<String,Integer>();
   int[] previousDefaults=new int[]{31,30,29,28};
-  for(int i=0;i<4;i++){int id=c.get("Compatibility",NAMES[i]+"PotionId",previousDefaults[i],"Existing reserved potion ID; preserve this value for saved worlds and use the same value on both sides.").getInt();if(id<1||id>PotionIdRegistry.maximumSupportedId()||Potion.potionTypes[id]!=null)throw new IllegalStateException("Potion ID occupied or unsupported for "+NAMES[i]+": "+id+"; preserve matching saved configuration");EFFECTS[i]=new Effect(id,NAMES[i],COLORS[i]);}
-  for(int i=4;i<NAMES.length;i++){int preferred=c.get("Compatibility",NAMES[i]+"PotionId",-1,"New effect: -1 uses a persistent allocation in config/legacy-potion-ids.properties. Keep that file with the pack and saved worlds.").getInt();if(preferred==0)throw new IllegalStateException("Potion zero is reserved; use -1 or an available supported ID for "+NAMES[i]);requests.put(NAMES[i],preferred);}
+  Map<String,Integer> legacyDefaults=new TreeMap<String,Integer>();
+  for(int i=0;i<NAMES.length;i++){
+   int preferred=c.get("Compatibility",NAMES[i]+"PotionId",-1,"-1 reuses a persistent allocation in config/legacy-potion-ids.properties. Positive IDs are initial assignments; retain matching files with saved worlds and on both sides.").getInt();
+   if(preferred==0)throw new IllegalStateException("Potion zero is reserved; use -1 or an available supported ID for "+NAMES[i]);
+   requests.put(NAMES[i],preferred);if(i<4)legacyDefaults.put(NAMES[i],previousDefaults[i]);
+  }
   if(!Content.uab)requests.put("glowing",c.get("Compatibility","glowingPotionId",-1,"Standalone spectral-arrow effect; -1 uses the persistent legacy potion allocation file.").getInt());
-  IDS.reserve(requests);IDS.allocate();
+  boolean imported=IDS.reserveLegacy(requests,legacyDefaults);
+  net.minecraftforge.common.config.Property migration=c.get("Compatibility","legacyPotionDefaultsReallocated",false,"Safety marker for imported conflicting old defaults. Keep true: worlds with old MCM snapshots require deliberate ID migration.");
+  if(imported){migration.set(true);for(int i=0;i<4;i++)c.get("Compatibility",NAMES[i]+"PotionId",-1).set(requests.get(NAMES[i]));}
+  if(c.hasChanged())c.save();
+  IDS.protectLegacyWorlds(migration.getBoolean(),Arrays.copyOf(NAMES,4));
+  IDS.allocate();
   if(!Content.uab){Ammunition.glowing=new Effect(IDS.id("glowing"),"glowing",9740385);IDS.track("glowing",Ammunition.glowing);}
-  else try{Object effect=Class.forName("ganymedes01.etfuturum.potion.ModPotions").getField("glowing").get(null);if(effect instanceof Potion)Ammunition.glowing=(Potion)effect;}catch(ReflectiveOperationException absent){throw new IllegalStateException("Unsupported UAB glowing effect",absent);}
-  for(int i=4;i<NAMES.length;i++){EFFECTS[i]=new Effect(IDS.id(NAMES[i]),NAMES[i],COLORS[i]);IDS.track(NAMES[i],EFFECTS[i]);}
+
+  for(int i=0;i<NAMES.length;i++){EFFECTS[i]=new Effect(IDS.id(NAMES[i]),NAMES[i],COLORS[i]);IDS.track(NAMES[i],EFFECTS[i]);}
   if(c.hasChanged())c.save();net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(IDS);net.minecraftforge.common.MinecraftForge.EVENT_BUS.register(new Events());
  }
  public static void verifyRegistrations(){Ammunition.resolveGlowing();IDS.verify();for(Potion potion:EFFECTS)if(potion==null||potion.id<0||potion.id>=Potion.potionTypes.length||Potion.potionTypes[potion.id]!=potion)throw new IllegalStateException("An MCM potion registration was overwritten; restore matching saved potion IDs");}

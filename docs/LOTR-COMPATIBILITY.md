@@ -20,7 +20,7 @@ LOTR's transformer patches player eating, living armor/death handling and horse 
 
 ## Registry compatibility
 
-LOTR reserves potion ID 30 for poisoned drinks. With LOTR present, fresh MCM configuration defaults are Weaving 31, Oozing 27, Infested 29, Wind Charged 28. Without LOTR they are 31, 30, 29, 28. Existing explicit configuration is preserved; occupied IDs fail with an actionable message rather than overwriting another effect or silently renumbering saved effects. Client and server must use matching IDs. Adding LOTR to an existing MCM save may require choosing unused IDs and handling already saved potion identities deliberately.
+LOTR reserves potion ID 30 for poisoned drinks. Fresh MCM settings now use `-1` for shared persistent allocation, which skips live and reserved slots. Compatible existing positive IDs remain fixed and are imported into the ledger. Only unrecorded historical defaults conflicting with another saved owner are replaced with automatic requests; recorded MCM identities and deliberate nondefault overrides are never silently reassigned. Keep matching configurations and `config/legacy-potion-ids.properties` on both sides. An installation that imported conflicting defaults rejects old MCM world snapshots lacking the four legacy identities, rather than guessing how to reinterpret saved effects. Worlds predating allocation snapshots require deliberate backup and migration when changing their effect IDs.
 
 ## Verification boundary
 

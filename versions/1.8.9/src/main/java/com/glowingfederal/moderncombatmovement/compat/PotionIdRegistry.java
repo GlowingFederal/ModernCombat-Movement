@@ -37,6 +37,34 @@ public final class PotionIdRegistry {
 
     public PotionIdRegistry(String owner) { this.owner = owner; }
 
+    private boolean legacyAssignmentsChanged;
+    private String[] legacyNames = new String[0];
+
+    public void protectLegacyWorlds(boolean changed, String[] names) {
+        legacyAssignmentsChanged = changed;
+        legacyNames = names.clone();
+    }
+
+    public boolean reserveLegacy(Map<String, Integer> overrides, Map<String, Integer> previousDefaults) {
+        synchronized (lock(FILE)) {
+            Properties data = read(FILE);
+            boolean changed = false;
+            for (Map.Entry<String, Integer> entry : previousDefaults.entrySet()) {
+                String name = entry.getKey();
+                int configured = overrides.get(name);
+                int request = LegacyPotionAssignments.request(data, owner, name, configured, entry.getValue());
+                if (request != configured) {
+                    overrides.put(name, request);
+                    changed = true;
+                    LogManager.getLogger(owner).warn("Legacy default {}:{}={} conflicts with a saved potion identity; allocating this MCM effect through the shared ledger", owner, name, configured);
+                }
+            }
+            reserve(overrides);
+            return changed;
+        }
+    }
+
+
     public void reserve(Map<String, Integer> overrides) { reserve(overrides, overrides.keySet()); }
 
     public void reserve(Map<String, Integer> overrides, Set<String> enabled) {
@@ -144,7 +172,8 @@ public final class PotionIdRegistry {
         }
     }
 
-    @SubscribeEvent
+    // Validate the pre-upgrade snapshot before another cooperative owner extends it.
+    @SubscribeEvent(priority = net.minecraftforge.fml.common.eventhandler.EventPriority.HIGHEST)
     public void worldLoad(WorldEvent.Load event) {
         if (event.world.isRemote || event.world.provider.getDimensionId() != 0) return;
         verify();
@@ -154,6 +183,11 @@ public final class PotionIdRegistry {
         synchronized (lock(FILE)) {
             Properties current = read(FILE);
             Properties saved = read(snapshot);
+            if (legacyAssignmentsChanged && LegacyPotionAssignments.ambiguousWorld(saved, owner, legacyNames))
+                throw failure("This world records MCM effects from before the four legacy IDs joined the ledger,"
+                        + " but this installation imported conflicting defaults. Its potion data is ambiguous."
+                        + " Restore the original compatible configuration/allocation file or migrate a backup deliberately;"
+                        + " this world's saved identities will not be silently changed.");
             // Validate every recorded owner, including temporarily absent/disabled effects.
             for (String key : saved.stringPropertyNames()) {
                 if (!key.equals("schema") && !saved.getProperty(key).equals(current.getProperty(key)))
